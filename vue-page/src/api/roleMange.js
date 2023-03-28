@@ -1,47 +1,50 @@
 import request from '@/utils/request'
 
+
 export default {
-  getUserList(searchModel){
+  getRoleList(searchModel){
     return request({
-      url:'user/list',
+      url:'role/list',
       method:'get',
       params:{
         pageNo:searchModel.pageNo,
         pageSize:searchModel.pageSize,
-        username:searchModel.username,
-        phone:searchModel.phone,
+       rolename:searchModel.rolename,
       }
     });
   },
 
- addUser(user){
+  addRole(role){
     return request({
-      url:'user',
+      url:'role',
       method:'post',
-      data: user,
+      data: role,
     });
   },
 
-  updateUser(user){
+  updateRole(role){
     return request({
-      url:'user',
+      url:'role',
       method:'put',
-      data: user,
+      data: role,
     });
   },
-  getUserById(userId){
+  getRoleById(roleId){
     return request({
-      url:`/user/${userId}`,
+      url:`/role/${roleId}`,
       method:'get',
     });
   },
-  delUserById(userId){
+  delRoleById(roleId){
     return request({
-      url:`/user/${userId}`,
+      url:`/role/${roleId}`,
       method:'delete',
     });
   },
-  // 查询所有角色列表
-
-
+  getAllRole(){
+    return request({
+      url: '/role/all',
+      method: 'get'
+    });
+  },
 }

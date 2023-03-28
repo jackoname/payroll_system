@@ -14,7 +14,7 @@ public class GC {
         String password="123456";
         String moduleName ="sys";
         String mapperLocation ="D:\\bishe\\payroll_management _system\\src\\main\\resources\\mapper\\"+moduleName;
-        String table="staff_data,staff_wage,users";
+        String table="staff_data,staff_wage,users,role,menu,role_menu,user_role";
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
                     builder.author("xiaocai") // 设置作者
@@ -29,7 +29,7 @@ public class GC {
                 })
                 .strategyConfig(builder -> {
                     builder.addInclude(table); // 设置需要生成的表名
-                            //.addTablePrefix("x_"); // 设置过滤表前缀
+                            //.addTablePrefix("t_"); // 设置过滤表前缀
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();

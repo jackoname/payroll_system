@@ -47,3 +47,10 @@ logging:
   level:
     root: info
     com.oyhj.sys.mapper.*: debug
+---
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: delete
+      logic-not-delete-value: 0
+      logic-delete-value: 1

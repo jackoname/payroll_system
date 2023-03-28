@@ -5,7 +5,7 @@
         <el-col :span="20">
           <el-input v-model="searchModel.username" placeholder="用户名" clearable></el-input>
           <el-input v-model="searchModel.phone" placeholder="手机号" clearable></el-input>
-          <el-button type="primary" round icon="el-icon-search">查询</el-button>
+          <el-button type="primary" @click="getUserList" round icon="el-icon-search" >查询</el-button>
         </el-col>
         <el-col :span="4" align="right">
           <el-button  @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
@@ -17,7 +17,9 @@
       <el-table
         :data="userList"
         stripe
-        style="width: 100%">
+        style="width: 100%"
+        :cell-style="cellStyle"
+       >
         <el-table-column
           prop="date"
           label="#"
@@ -50,12 +52,17 @@
         </el-table-column>
 
         <el-table-column
-          prop="userid"
+          prop="stateuser"
+          label="状态"
+          >
+        </el-table-column>
+
+        <el-table-column
           label="操作"
           width="180">
           <template slot-scope="scope">
             <el-button type="primary" @click="editUser(scope.row.userId)" icon="el-icon-edit" size="mini" circle></el-button>
-            <el-button type="danger" @click="delUser(scope.row.userId)" icon="el-icon-delete" size="mini" circle></el-button>
+            <el-button type="danger"   @click="delUser(scope.row)"   icon="el-icon-delete" size="mini" circle></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -72,29 +79,36 @@
     </el-pagination>
 
   <!--用户对话框-->
-  <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible">
+  <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible"  >
     <el-form :model="userForm" :rules="rules" ref="userFormRef">
       <el-form-item label="用户名" :label-width="formLabelWidth"  prop="username">
         <el-input v-model="userForm.username" autocomplete="off"></el-input>
       </el-form-item>
 
-      <el-form-item label="登录密码" :label-width="formLabelWidth"  prop="password">
-        <el-input type="password" v-model="userForm.password" autocomplete="off"></el-input>
+      <el-form-item label="登录密码" :label-width="formLabelWidth"  prop="password"  v-show="flag1">
+        <el-input type="password" v-model="userForm.password" autocomplete="off" ></el-input>
       </el-form-item>
 
       <el-form-item label="联系电话" :label-width="formLabelWidth">
-        <el-input v-model="userForm.userId" autocomplete="off"></el-input>
+        <el-input v-model="userForm.phone" autocomplete="off"></el-input>
       </el-form-item>
 
       <el-form-item label="用户状态" :label-width="formLabelWidth">
         <el-switch
-          v-model="userForm.status"
+          v-model="userForm.isuse"
           :active-value="1"
           :inactive-value="0"
           >
         </el-switch>
       </el-form-item>
-
+      <el-form-item label="用户角色" :label-width="formLabelWidth">
+        <el-checkbox-group
+          style="width: 85%"
+          v-model="userForm.roleIdList"
+          :max="1">
+          <el-checkbox v-for=" role in roleList" :label="role.id" :key="role.id">{{role.rolename}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
       <el-form-item label="电子邮件" :label-width="formLabelWidth"  prop="email">
         <el-input v-model="userForm.email" autocomplete="off"></el-input>
       </el-form-item>
@@ -109,6 +123,7 @@
 
 <script>
   import userApi from '@/api/userMange'
+  import  roleApi from '@/api/roleMange'
     export default {
         name: "user",
       data(){
@@ -120,15 +135,20 @@
                 callback();
         };
           return{
+            roleList: [],
+            flag1:true,
             formLabelWidth:"130px",
             dialogFormVisible:false,
-            userForm:{},
+            userForm:{
+              roleIdList:[]
+            },
             title:"",
             total:0,
             searchModel:{
               pageNo:1,
               pageSize:10,
             },
+
             userList:[],
             rules:{
               username: [
@@ -137,7 +157,7 @@
               ],
              password: [
                 { required: true, message: '请输入登录初始密码', trigger: 'blur' },
-                { min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur' }
+                { min: 6, max: 5000, message: '长度在 6 到 500个字符', trigger: 'blur' }
               ],
               email: [
                 { required: true, message: '请输入电子邮箱', trigger: 'blur' },
@@ -147,31 +167,14 @@
           }
       },
       methods:{
-        delUser(){his.$refs.userFormRef.validate((valid) => {
-          if (valid) {
-            userApi.addUser(this.userForm).then(response=>{
-              //成功
-              this.$message(
-                {
-                  message: response.message,
-                  type: 'success',
-                })
-              //
-              this.dialogFormVisible=false;
-              //
-              this.getUserList();
-            })
 
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });},
           saveUser(){
             this.$refs.userFormRef.validate((valid) => {
-              if (valid) {
+
+              if (valid&&this.flag1==true) {
                 userApi.addUser(this.userForm).then(response=>{
                   //成功
+                  console.log(this.userForm)
                   this.$message(
                   {
                     message: response.message,
@@ -183,8 +186,23 @@
                   this.getUserList();
                 })
 
-              } else {
+              }
+              else if(valid&&this.flag1==false){
+                  userApi.updateUser(this.userForm).then(response=>{
+                this.$message(
+                  {
+                    message: response.message,
+                    type: 'success',
+                  })
+                //
+                this.dialogFormVisible=false;
+                //
+                this.getUserList();
+              })
+              }
+              else {
                 console.log('error submit!!');
+                this.getUserList();
                 return false;
               }
             });
@@ -203,32 +221,89 @@
           userApi.getUserList(this.searchModel).then(response=>{
             this.userList=response.data.rows;
             this.total=response.data.total;
+            this.userList.forEach(item=>{
+              if(item.isuse==0){
+                item.stateuser="禁用";
+              }
+              else {
+               item.stateuser="正常";
+              }
+            });
+
           });
+
         },
         openEditUI(){
-
+          this.flag1=true,
+            this.userForm.password="@123456"
           this.title='新增用户';
           this.dialogFormVisible=true;
         },
         editUser(userId){
+
           userApi.getUserById(userId).then(response => {
+            this.flag1=false;
             this.userForm = response.data;
-            console.log(response.data)
+            console.log(this.userForm.roleIdList)
+
           });
-          this.title='编辑用户';
+          this.title='编辑用户'
+          this.flag=false;
           this.dialogFormVisible=true;
-
           },
-        delUser(){
-
+        delUser(user){
+          this.$confirm(`是否要删除${user.username}?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            userApi.delUserById(user.userId).then(response => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.getUserList();
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            });
+          });
         },
         clearForm(){
          this.$refs.userFormRef.clearValidate();
-          this.userForm="";
+          this.userForm= {
+            userId:"",
+            username:"",
+            password:"",
+            isuse:"",
+            stateuser:"",
+            phone:"" ,
+            email:"",
+            roleIdList:[],
+          };
+        },
+        cellStyle({ row, column, rowIndex, columnIndex }) {
+
+          if ((columnIndex === 5||columnIndex === 2) &&row.isuse==0 ) {
+            return "color:#FF6100 ";
+          }
+          else if ((columnIndex === 5 ||columnIndex === 2)&&row.isuse==1  )
+          return "color:#67C23A";
+        },
+        getAllRoleList(){
+          roleApi.getAllRole().then(response => {
+            this.roleList = response.data;
+            console.log( this.roleList);
+          });
         },
       },
+
+
       created() {
           this.getUserList();
+          this.getAllRoleList();
       }
     };
 </script>
