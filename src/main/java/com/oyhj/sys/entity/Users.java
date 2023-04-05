@@ -33,11 +33,24 @@ public class Users implements Serializable {
 
     private String password;
     private  Integer isuse;
-    @TableField("roletag")
-    private  Integer roletag;
+    private  Integer depid;
+    private  Integer  postid;
+    private  Integer age;
     private String phone;
-
+    private  Integer sex;
     private String email;
-@TableField(exist = false)
+    private String birthday;
+    private String   name;
+    @TableField("bankno")
+    private String bankno;
+    private String idcardno;
+    private String photo;
+    private String remarks;
+    private String address;
+    @TableField(exist = false)
    private List<Integer> roleIdList;
+    @TableField(exist = false)
+    private List<Integer> depIdList;
+    @TableField(exist = false)
+    private List<Integer> postIdList;
 }

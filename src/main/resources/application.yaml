@@ -54,3 +54,4 @@ mybatis-plus:
       logic-delete-field: delete
       logic-not-delete-value: 0
       logic-delete-value: 1
+  type-aliases-package: com.oyhj.*.entity

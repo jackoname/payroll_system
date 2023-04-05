@@ -1,6 +1,6 @@
 package com.oyhj.sys.mapper;
 
-import com.oyhj.sys.entity.StaffData;
+import com.oyhj.sys.entity.ListType;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author xiaocai
- * @since 2023-03-18
+ * @since 2023-04-02
  */
-public interface StaffDataMapper extends BaseMapper<StaffData> {
+public interface ListTypeMapper extends BaseMapper<ListType> {
 
 }

@@ -1,6 +1,6 @@
 package com.oyhj.sys.service;
 
-import com.oyhj.sys.entity.StaffData;
+import com.oyhj.sys.entity.DepUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xiaocai
- * @since 2023-03-18
+ * @since 2023-04-03
  */
-public interface IStaffDataService extends IService<StaffData> {
+public interface IDepUserService extends IService<DepUser> {
 
 }

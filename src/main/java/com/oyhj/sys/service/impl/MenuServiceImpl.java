@@ -14,7 +14,7 @@ import java.util.List;
  *  服务实现类
  * </p>
  *
- * @author xiaocai
+ * @author oyhj
  * @since 2023-03-26
  */
 @Service
@@ -42,6 +42,25 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
             }
         }
 
+    }
+    @Override
+    public List<Menu> getMenuListByUserId(Integer userId) {
+        // 一级菜单
+        List<Menu> menuList = this.baseMapper.getMunuListByUserId(userId, 0);
+        // 子菜单
+        setMenuChildrenByUserId(userId, menuList);
+        return menuList;
+    }
+
+    private void setMenuChildrenByUserId(Integer userId, List<Menu> menuList) {
+        if(menuList != null){
+            for (Menu menu : menuList) {
+                List<Menu> subMenuList = this.baseMapper.getMunuListByUserId(userId, menu.getMenuid());
+                menu.setChildren(subMenuList);
+                // 递归
+                setMenuChildrenByUserId(userId,subMenuList);
+            }
+        }
     }
 
 }

@@ -1,25 +1,22 @@
 package com.oyhj.sys.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.oyhj.common.jwtUnit.JwtUtil;
-import com.oyhj.sys.entity.UserRole;
-import com.oyhj.sys.entity.Users;
+import com.oyhj.sys.entity.*;
 
-import com.oyhj.sys.mapper.RoleMapper;
-import com.oyhj.sys.mapper.UserRoleMapper;
-import com.oyhj.sys.mapper.UsersMapper;
+import com.oyhj.sys.mapper.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oyhj.sys.service.IMenuService;
 import com.oyhj.sys.service.IUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +24,7 @@ import java.util.stream.Collectors;
  *  服务实现类
  * </p>
  *
- * @author xiaocai
+ * @author oyhj
  * @since 2023-03-09
  */
  @Service
@@ -41,7 +38,17 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Resource
     private UserRoleMapper userRoleMapper;
     @Resource
+    private DepUserMapper  depUserMapper;
+    @Resource
+    private PostDepUserMapper postDepUserMapper;
+    @Resource
     private RoleMapper roleMapper;
+    @Resource
+    private DepartmentMapper departmentMapper;
+    @Resource
+    private PostMapper postMapper;
+    @Autowired
+    private IMenuService menuService;
     @Override
     public Map<String, Object> login(Users user) {
         LambdaQueryWrapper<Users> wrapper = new LambdaQueryWrapper<>();
@@ -105,7 +112,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             Map<String,Object>data =new HashMap<>();
             data.put("name", loginuser.getUsername());
             data.put("userId", loginuser.getUserId());
-            return data;
+
+           // 角色
+          List<String> roleList = this.baseMapper.getRoleNameByUserId(loginuser.getUserId());
+       //   List<Integer> depIdList=this.baseMapper.g(loginuser.getUserId());
+         // List<Integer> postIdList;
+           // 权限列表
+           List<Menu> menuList = menuService.getMenuListByUserId(loginuser.getUserId());
+           data.put("menuList",menuList);
+
+           return data;
         }
         return null;
     }
@@ -120,12 +136,22 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Transactional
     public void addUser(Users user) {
         baseMapper.insert(user);
-       List<Integer> roleList = user.getRoleIdList();
-        System.out.println(user);
+        List<Integer> roleList = user.getRoleIdList();
+        List<Integer> depList = user.getDepIdList();
+        List<Integer>postList = user.getPostIdList();
         if (roleList!=null) {
 
                 userRoleMapper.insert(new UserRole(null,user.getUserId(),roleMapper.selectById(roleList.get(0)).getId()));
             }
+        if (depList!=null) {
+
+            userRoleMapper.insert(new UserRole(null,user.getUserId(),departmentMapper.selectById(depList.get(0)).getId()));
+        }
+
+        if (postList!=null) {
+            userRoleMapper.insert(new UserRole(null,user.getUserId(),postMapper.selectById(postList.get(0)).getPostId()));
+        }
+
 
     }
 
@@ -139,6 +165,24 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             return ur.getRoleid();})
                 .collect(Collectors.toList());
         users.setRoleIdList(roleIdList);
+
+        LambdaQueryWrapper<DepUser> objectLambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+        objectLambdaQueryWrapper1.eq(DepUser::getUserid,userId);
+        List<DepUser> depUsers = depUserMapper.selectList(objectLambdaQueryWrapper1);
+        List<Integer> depIdList =depUsers.stream().map(ur->{
+            return ur.getDepid();})
+                .collect(Collectors.toList());
+        users.setDepIdList(depIdList);
+
+        LambdaQueryWrapper<PostDepUser> objectLambdaQueryWrapper2= new LambdaQueryWrapper<>();
+        objectLambdaQueryWrapper2.eq(PostDepUser::getUserid,userId);
+
+        List<PostDepUser>postDepUsers = postDepUserMapper.selectList(objectLambdaQueryWrapper2);
+        List<Integer> postIdList =postDepUsers.stream().map(ur->{
+            return ur.getPostid();})
+                .collect(Collectors.toList());
+        users.setPostIdList(postIdList);
+
         return users;
     }
 
@@ -151,11 +195,32 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(UserRole::getUserid,user.getUserId());
         userRoleMapper.delete(wrapper);
+
+        LambdaQueryWrapper<DepUser> wrapper1 = new LambdaQueryWrapper<>();
+        wrapper1.eq(DepUser::getUserid,user.getUserId());
+        depUserMapper.delete(wrapper1);
+
+        LambdaQueryWrapper<PostDepUser> wrapper2 = new LambdaQueryWrapper<>();
+        wrapper2.eq(PostDepUser::getUserid,user.getUserId());
+        postDepUserMapper.delete(wrapper2);
+
         // 设置新的角色
         List<Integer> roleIdList = user.getRoleIdList();
+        List<Integer> depIdList = user.getDepIdList();
+        List<Integer> postIdList = user.getPostIdList();
         if(roleIdList != null){
             for (Integer roleId : roleIdList) {
                 userRoleMapper.insert(new UserRole(null,user.getUserId(),roleId));
+            }
+        }
+        if(depIdList != null){
+            for (Integer depId : depIdList) {
+                depUserMapper.insert(new DepUser(null,depId,user.getUserId()));
+            }
+        }
+        if(roleIdList != null){
+            for (Integer postId : postIdList) {
+                postDepUserMapper.insert(new PostDepUser(null,user.getUserId(),postId,null));
             }
         }
     }
@@ -167,6 +232,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(UserRole::getUserid,id);
         userRoleMapper.delete(wrapper);
+        LambdaQueryWrapper<DepUser> wrapper1 = new LambdaQueryWrapper<>();
+        wrapper1.eq(DepUser::getUserid,id);
+        depUserMapper.delete(wrapper1);
+        LambdaQueryWrapper<PostDepUser> wrapper2 = new LambdaQueryWrapper<>();
+        wrapper2.eq(PostDepUser::getUserid,id);
     }
 
 }

@@ -9,10 +9,10 @@ import org.springframework.stereotype.Controller;
  * </p>
  *
  * @author xiaocai
- * @since 2023-03-18
+ * @since 2023-04-02
  */
 @Controller
-@RequestMapping("/sys/staffData")
-public class StaffDataController {
+@RequestMapping("/sys/wageList")
+public class WageListController {
 
 }

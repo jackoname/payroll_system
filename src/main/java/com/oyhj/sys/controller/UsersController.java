@@ -11,8 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.Objects;
  *  前端控制器
  * </p>
  *
- * @author xiaocai
+ * @author oyhj
  * @since 2023-03-09
  */
 @Api(tags={"用户接口列表"})
@@ -103,7 +105,7 @@ public class UsersController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         usersService.addUser(user);
 
-        return Result.success("添加用户成功！");
+        return Result.success("添加用户成功!");
     }
     @PutMapping
     public Result<?> updateUser(@RequestBody Users user){
@@ -124,5 +126,10 @@ public class UsersController {
     public Result<?> DeleteUserById(@PathVariable("userId") Integer userId){
         usersService.deleteUserById(userId);
         return Result.success("删除成功");
+    }
+    @PostMapping("/photo")
+    public String uploadTx(MultipartFile file){
+        System.out.println(file.getOriginalFilename());
+        return null;
     }
 }
