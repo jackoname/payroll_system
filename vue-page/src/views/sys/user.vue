@@ -4,7 +4,21 @@
         <el-row>
           <el-col :span="20">
             <el-input v-model="searchModel.username" placeholder="用户名" clearable></el-input>
-            <el-input v-model="searchModel.phone" placeholder="手机号" clearable></el-input>
+            <el-select
+              :clearable="true"
+              v-model="searchModel.roleid"
+              @focus="getDepList"
+
+              placeholder="请选择"
+             >
+              <el-option
+                v-for=" item in roleList"
+                :key="item.id"
+                :value="item.id"
+                :label="item.rolename"
+              >
+              </el-option>
+            </el-select>
             <el-button type="primary" @click="getUserList" round icon="el-icon-search" >查询</el-button>
           </el-col>
           <el-col :span="4" align="right">
@@ -16,9 +30,16 @@
       <el-card>
         <el-table
           :data="userList"
-          stripe
+          :header-cell-style="{'text-align':'center'}"
+          :cell-style="{'text-align':'center'}"
           style="width: 100%"
-          :cell-style="cellStyle"
+
+          border="ture"
+          fit="ture"
+          stripe="true"
+          size="mini"
+          show-header="true"
+          highlight-current-row="ture"
          >
           <el-table-column
             prop="date"
@@ -34,18 +55,48 @@
             <el-avatar icon="el-icon-user-solid"></el-avatar>
 
           </el-table-column>
-          <el-table-column
-            prop="stateuser"
-            label="状态">
-          </el-table-column>
 
-          <el-table-column
-            prop="name"
-            label="姓名">
-          </el-table-column>
           <el-table-column
             prop="username"
             label="用户名">
+            <template slot-scope="scope">
+              <el-tag size="small" effect="dark" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.username}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="姓名">
+            <template slot-scope="scope">
+              <el-tag size="small" effect="dark" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.name}}</el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            prop="depName"
+            label="部门">
+            <template slot-scope="scope">
+              <el-tag size="small" effect="dark" :type="scope.row.stateuser=='禁用'?'danger':'success'" >{{scope.row.depName}}</el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            prop="postName"
+            label="职位"
+            width="155">
+            <template slot-scope="scope">
+              <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.postName}}</el-tag>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            prop="postName"
+            label="角色"
+            width="155">
+            <template slot-scope="scope">
+              <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">
+                {{scope.row.roleName}}
+              </el-tag>
+            </template>
           </el-table-column>
           <el-table-column
             prop="statesex"
@@ -57,53 +108,64 @@
             label="年龄">
           </el-table-column>
           <el-table-column
-            prop="phone"
-            label="电话"
-            width="125">
+            prop="stateuser"
+            label="状态">
+            <template slot-scope="scope">
+              <el-tag size="small" effect="dark"  :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.stateuser}}</el-tag>
+            </template>
           </el-table-column>
 
-          <el-table-column
-            prop="email"
-            label="电子邮件"
-          width="155">
-          </el-table-column>
+
+<!--          <el-table-column-->
+<!--            prop="phone"-->
+<!--            label="电话"-->
+<!--            width="125">-->
+<!--          </el-table-column>-->
+
+<!--          <el-table-column-->
+<!--            prop="email"-->
+<!--            label="电子邮件"-->
+<!--          width="155">-->
+<!--          </el-table-column>-->
+
+
+
+<!--          <el-table-column-->
+<!--            prop="bankno"-->
+<!--            label="银行卡号"-->
+<!--          width="165">-->
+<!--          </el-table-column>-->
+
+<!--          <el-table-column-->
+<!--            prop="idcardno"-->
+<!--            label="身份证"-->
+<!--          width="165">-->
+<!--          </el-table-column>-->
+
+<!--          <el-table-column-->
+<!--            prop="birthday"-->
+<!--            label="出生日期"-->
+<!--          width="100">-->
+<!--          </el-table-column>-->
+
+<!--          <el-table-column-->
+<!--            prop="address"-->
+<!--            label="地址">-->
+<!--          </el-table-column>-->
 
           <el-table-column
-            prop="depid"
-            label="部门">
+            label="详细信息">
+            <template slot-scope="scope">
+              <el-button type="text" size="mini" @click="getDesdata(scope.row)">
+                <i class="el-icon-view el-icon--right" ></i> 查看
+              </el-button>
+            </template>
           </el-table-column>
-          <el-table-column
-            prop="postid"
-            label="职位">
-          </el-table-column>
-
-          <el-table-column
-            prop="bankno"
-            label="银行卡号"
-          width="165">
-          </el-table-column>
-
-          <el-table-column
-            prop="idcardno"
-            label="身份证"
-          width="165">
-          </el-table-column>
-
-          <el-table-column
-            prop="birthday"
-            label="出生日期"
-          width="100">
-          </el-table-column>
-
-          <el-table-column
-            prop="address"
-            label="地址">
-          </el-table-column>
-
 
           <el-table-column
             label="操作"
             width="120"
+            fit="true"
             >
             <template slot-scope="scope">
               <el-button type="primary" @click="editUser(scope.row.userId)" icon="el-icon-edit" size="mini" circle></el-button>
@@ -131,7 +193,6 @@
         <el-form-item>
 
         </el-form-item>
-
         <el-form-item label="用户名" :label-width="formLabelWidth"  prop="username">
           <el-input v-model="userForm.username" autocomplete="off"></el-input>
         </el-form-item>
@@ -158,25 +219,27 @@
 
 
         <el-form-item label="年   龄" :label-width="formLabelWidth" >
-          <el-input v-model="userForm.age" autocomplete="off"></el-input>
+          <el-input v-model="userForm.age" autocomplete="off" type="number" width="20 "></el-input>
         </el-form-item>
 
         <el-form-item label="出生日期" :label-width="formLabelWidth"  >
-
           <el-date-picker
             v-model="userForm.birthday"
             type="date"
+            value-format="yyyy-MM-dd"
+            @input="$forceUpdate()"
             placeholder="选择日期">
           </el-date-picker>
+
         </el-form-item>
         <el-form-item label="地   址" :label-width="formLabelWidth"  >
           <el-input v-model="userForm.address" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="银行卡号" :label-width="formLabelWidth"  prop="bankno"  >
-          <el-input v-model="userForm.bankno" autocomplete="off"></el-input>
+          <el-input v-model="userForm.bankno" autocomplete="off" type="number"></el-input>
         </el-form-item>
         <el-form-item label=" 身份证 " :label-width="formLabelWidth"   prop="idcardno" >
-          <el-input v-model="userForm.idcardno" autocomplete="off"></el-input>
+          <el-input v-model="userForm.idcardno" autocomplete="off" type="number"></el-input>
         </el-form-item>
 
         <el-form-item label=" 备注" :label-width="formLabelWidth"  >
@@ -192,22 +255,54 @@
         </el-form-item>
 
         <el-form-item label="部门" :label-width="formLabelWidth">
-          <el-checkbox-group
-            style="width: 85%"
-            v-model="userForm.depIdList"
-            :max="1">
-            <el-checkbox v-for=" department in depList " :label="department.id" :key="department.id">{{department.depart}}</el-checkbox>
-          </el-checkbox-group>
+<!--          <el-checkbox-group-->
+<!--            style="width: 85%"-->
+<!--            v-model="userForm.depIdList"-->
+<!--            :max="1">-->
+<!--            <el-checkbox v-for=" department in depList " :label="department.id" :key="department.id">{{department.depart}}</el-checkbox>-->
+<!--          </el-checkbox-group>-->
+          <el-select
+            :clearable="true"
+            v-model="userForm.depIdList[0]"
+            @blur="myblur"
+            @focus="myfocus"
+            placeholder="请选择"
+            >
+            <el-option
+              v-for=" item in depList"
+              :key="item.id"
+              :value="item.id"
+              :label="item.depart"
+            >
+            </el-option>
+          </el-select>
+
         </el-form-item>
 
 
         <el-form-item label="职位" :label-width="formLabelWidth">
-          <el-checkbox-group
-            style="width: 85%"
-            v-model="userForm.postIdList"
-            :max="1">
-            <el-checkbox v-for=" post in postList" :label="post.post_id" :key="post.post_id">{{post.post_name}}</el-checkbox>
-          </el-checkbox-group>
+<!--          <el-checkbox-group-->
+<!--            style="width: 85%"-->
+<!--            v-model="userForm.postIdList"-->
+<!--            :max="1">-->
+<!--            <el-checkbox v-for=" post in postList" :label="post.postId" :key="post.postId">{{post.postName}}</el-checkbox>-->
+<!--          </el-checkbox-group>-->
+          <el-select
+            :clearable="true"
+            v-model="userForm.postIdList[0]"
+            @focus="myblur"
+            placeholder="请选择">
+            <el-option
+
+              v-for=" item in postList"
+              :key="item.postId"
+              :value="item.postId"
+              :label="item.postName"
+
+            >
+            </el-option>
+          </el-select>
+
         </el-form-item>
         <el-form-item label="用户状态" :label-width="formLabelWidth">
           <el-switch
@@ -223,6 +318,142 @@
         <el-button type="primary" @click="saveUser">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-drawer
+      :visible.sync="table"
+      :direction="direction"
+      size="40%">
+
+      <el-divider></el-divider>
+      <el-card class="box-card" shadow="away">
+      <el-descriptions   class="margin-top"  :column="1" size="mini" border="true">
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-picture-outline"></i>
+            头像
+          </template>
+          <el-avatar icon="el-icon-user"></el-avatar>
+        </el-descriptions-item>
+
+
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-user"></i>
+            用户名
+          </template>
+         {{dscdata.username}}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-user"></i>
+           姓名
+          </template>
+          {{dscdata.name}}
+        </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-user"></i>
+          年龄
+        </template>
+        {{dscdata.age}}
+      </el-descriptions-item>
+
+
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-user"></i>
+          性别
+        </template>
+        {{dscdata.statesex}}
+      </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-user"></i>
+            出生日期
+          </template>
+          {{dscdata.birthday}}
+        </el-descriptions-item>
+
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-suitcase"></i>
+          部门
+        </template>
+        {{dscdata.depName}}
+      </el-descriptions-item>
+
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-monitor"></i>
+          职位
+        </template>
+        {{dscdata.postName }}
+      </el-descriptions-item>
+
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-message"></i>
+          邮箱
+        </template>
+        {{dscdata.email}}
+      </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-mobile-phone"></i>
+            手机号
+          </template>
+          {{dscdata.phone}}
+        </el-descriptions-item>
+
+
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-postcard"></i>
+            身份证号
+          </template>
+          {{dscdata.idcardno}}
+        </el-descriptions-item>
+
+      <el-descriptions-item>
+      <template slot="label">
+        <i class="el-icon-bank-card"></i>
+        银行卡号
+      </template>
+      {{dscdata.bankno}}
+      </el-descriptions-item>
+
+
+
+
+
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-location-outline"></i>
+          居住地
+        </template>
+        {{dscdata.address}}
+      </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            联系地址
+          </template>
+          {{dscdata.address}}
+        </el-descriptions-item>
+        <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-tickets"></i>
+          备注
+        </template>
+        {{dscdata.remarks}}
+        </el-descriptions-item>
+      </el-descriptions>
+      </el-card>
+      <el-divider></el-divider>
+    </el-drawer>
+
     </div>
   </template>
 
@@ -264,28 +495,28 @@
             }
             callback();
           };
-          var checkname= (rule, value, callback) => {
-            var reg =/^[\u4e00-\u9fa5]{2,4}$/;    //2-4个中文字符正则
-            if (!reg.test(value)) {
-              return callback(new Error('姓名格式错误！'));
-            }
-            callback();
-          };
+
             return{
               //photo:"https://img1.baidu.com/it/u=4096959686,4145726040&fm=253&fmt=auto&app=138&f=JPEG?sec=1683017670&t=88663d7cd6f8d44dcd99a2d02f38584f",
               roleList: [],
+              dscdata:'',
+              isload:true,
               depList:[],
+              table:false,
               postList:[],
               flag1:true,
+              direction: 'rtl',//rtl / ltr / ttb / btt
               formLabelWidth:"130px",
               dialogFormVisible:false,
               userForm:{
                 roleIdList:[],
                 depIdList:[],
                 postIdList:[],
-
+                table: false,
+                dialog: false,
+                loading: false,
+                birthday:"",
               },
-              title:"",
               total:0,
               searchModel:{
                 pageNo:1,
@@ -305,10 +536,7 @@
                   { required: true, message: '请输入电子邮箱', trigger: 'blur' },
                   { validator: checkEmail, trigger: 'blur' }
                 ],
-                name:[
-                  { required: true, message: '请输入姓名', trigger: 'blur' },
-                  { validator: checkname, trigger: 'blur' }
-                            ],
+
                 idcardno:[
                   { required: true, message: '请输入身份证', trigger: 'blur' },
                   { validator: checkidcard, trigger: 'blur' }
@@ -328,12 +556,13 @@
         methods:{
 
             saveUser(){
+              console.log(this.userForm)
               this.$refs.userFormRef.validate((valid) => {
 
                 if (valid&&this.flag1==true) {
                   userApi.addUser(this.userForm).then(response=>{
                     //成功
-                    console.log(this.userForm)
+
                     this.$message(
                     {
                       message: response.message,
@@ -347,6 +576,7 @@
 
                 }
                 else if(valid&&this.flag1==false){
+
                     userApi.updateUser(this.userForm).then(response=>{
                   this.$message(
                     {
@@ -365,7 +595,19 @@
                   return false;
                 }
               });
+
             },
+          myblur(){
+            this.loading=false;
+            this.getPostListByDepId(this.userForm.depIdList[0]);
+          },
+          myfocus(){
+              this.userForm.postIdList[0]="";
+          },
+          getDesdata(value){
+              this.table=true;
+            this.dscdata=value;
+          },
           handleSizeChange(pageSize){
             this.searchModel.pageSize=pageSize;
             this.getUserList();
@@ -378,7 +620,9 @@
 
           getUserList(){
             userApi.getUserList(this.searchModel).then(response=>{
+
               this.userList=response.data.rows;
+
               this.total=response.data.total;
               this.userList.forEach(item=>{
                 if(item.isuse==0){
@@ -394,6 +638,8 @@
                 else if(item.sex==2){
                   item.statesex="女";
                 }
+                item.birthday=this.formatDate(item.birthday);
+                console.log(item);
               });
 
             });
@@ -410,8 +656,7 @@
             userApi.getUserById(userId).then(response => {
               this.flag1=false;
               this.userForm = response.data;
-              console.log(this.userForm.roleIdList)
-
+              this.userForm.birthday=this.formatDate(this.userForm.birthday);
             });
             this.title='编辑用户'
             this.flag=false;
@@ -457,36 +702,53 @@
               bankno:"",
               idcardno:"",
               address:"",
-              sex:""
+              sex:"",
+              depName:"",
+              postName:""
             };
           },
-          cellStyle({ row, column, rowIndex, columnIndex }) {
 
-            if ((columnIndex === 2||columnIndex === 3) &&row.isuse==0 ) {
-              return "color:#FF6100 ";
-            }
-            else if ((columnIndex === 2 ||columnIndex === 3)&&row.isuse==1  )
-            return "color:#67C23A";
-          },
           getAllRoleList(){
             roleApi.getAllRole().then(response => {
               this.roleList = response.data;
               console.log(this.roleList);
             });
           },
-          getAlldepList(){
+          getAllDepList(){
             depApi.getAllDep().then(response => {
               this.depList = response.data;
+
               console.log( this.depList);
             });
           },
-
-          getAllpostList(){
+          getAllPostList(){
             postApi.getAllPost().then(response => {
               this.postList = response.data;
-              console.log( this.postList);
+
             });
           },
+
+          getPostListByDepId(depIdList){
+
+            postApi.getPostListByDepId(depIdList).then(response => {
+              console.log(depIdList+"----")
+              this.postList = response.data;
+            });
+
+          },
+          formatDate(value) { // 时间戳转换日期格式方法
+            if (value == null) {
+              return ''
+            } else {
+              const date = new Date(value)
+              const y = date.getFullYear()// 年
+              let MM = date.getMonth() + 1 // 月
+              MM = MM < 10 ? ('0' + MM) : MM
+              let d = date.getDate() // 日
+              d = d < 10 ? ('0' + d) : d
+              return y + '-' + MM + '-' + d
+            }
+          }
 
         },
 
@@ -494,8 +756,8 @@
         created() {
             this.getUserList();
             this.getAllRoleList();
-            this.getAlldepList();
-            this.getAllpostList();
+            this.getAllDepList();
+            this.getAllPostList();
         }
       };
   </script>
@@ -510,5 +772,12 @@
     }
     .el-dialog .el-input{
       width: 85%;
+    }
+    .el-descriptions__body .el-descriptions__table .el-descriptions-item__cell {
+      text-align: center;
+
+    }
+    .el-descriptions__body {
+      text-align: center;
     }
   </style>

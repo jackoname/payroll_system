@@ -16,8 +16,15 @@
     <el-card>
       <el-table
         :data="roleList"
-        stripe
-        style="width: 100%">
+        style="width: 100%"
+        :header-cell-style="{'text-align':'center'}"
+        :cell-style="{'text-align':'center'}"
+        border="ture"
+        fit="ture"
+        stripe="true"
+        size="mini"
+        show-header="true"
+        highlight-current-row="ture">
         <el-table-column
           prop="date"
           label="#"
@@ -33,6 +40,9 @@
           prop="rolename"
           label="角色名称"
           width="160">
+            <template slot-scope="scope">
+              <el-tag size="small" effect="dark" type="success">{{scope.row.rolename}}</el-tag>
+            </template>
         </el-table-column>
 
         <el-table-column
@@ -72,7 +82,7 @@
         </el-form-item>
 
         <el-form-item label="角色描述" :label-width="formLabelWidth"  prop="roletag">
-          <el-input v-model="roleForm.roledec" autocomplete="off" type="number"></el-input>
+          <el-input v-model="roleForm.roledec" autocomplete="off" ></el-input>
         </el-form-item>
 
 

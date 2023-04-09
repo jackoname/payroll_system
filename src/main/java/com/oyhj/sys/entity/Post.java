@@ -1,8 +1,15 @@
 package com.oyhj.sys.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -12,6 +19,10 @@ import java.io.Serializable;
  * @author xiaocai
  * @since 2023-04-02
  */
+@TableName("post")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,42 +36,8 @@ public class Post implements Serializable {
 
     private String postName;
 
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-    public Integer getDepid() {
-        return depid;
-    }
-
-    public void setDepid(Integer depid) {
-        this.depid = depid;
-    }
-    public String getDsc() {
-        return dsc;
-    }
-
-    public void setDsc(String dsc) {
-        this.dsc = dsc;
-    }
-    public String getPostName() {
-        return postName;
-    }
-
-    public void setPostName(String postName) {
-        this.postName = postName;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-            "postId=" + postId +
-            ", depid=" + depid +
-            ", dsc=" + dsc +
-            ", postName=" + postName +
-        "}";
-    }
+    @TableField(exist = false)
+    private List<Integer> postidList;
+    @TableField(exist = false)
+    private String depName;
 }

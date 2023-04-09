@@ -2,42 +2,44 @@ import request from '@/utils/request'
 
 
 export default {
-  getRoleList(searchModel){
+  getPostList(searchModel){
     return request({
-      url:'role/list',
+      url:'post/list',
       method:'get',
       params:{
         pageNo:searchModel.pageNo,
         pageSize:searchModel.pageSize,
-       rolename:searchModel.rolename,
+        post_name:searchModel.post_name,
+        id:searchModel.id,
       }
     });
   },
 
-  addRole(role){
+  addPost(post){
     return request({
-      url:'role',
+      url:'post',
       method:'post',
-      data: role,
+      data: post,
     });
   },
 
-  updateRole(role){
+  updatePost(post){
     return request({
-      url:'role',
+      url:'post',
       method:'put',
-      data: role,
+      data: post,
     });
   },
-  getRoleById(roleId){
+  getPostById(postId){
     return request({
-      url:`/role/${roleId}`,
+      url:`/post/${postId}`,
       method:'get',
     });
   },
-  delRoleById(roleId){
+
+  delPostById(postId){
     return request({
-      url:`/role/${roleId}`,
+      url:`/post/${postId}`,
       method:'delete',
     });
   },
@@ -45,6 +47,16 @@ export default {
     return request({
       url: '/post/all',
       method: 'get'
+    });
+  },
+
+  getPostListByDepId(depIdList){
+    return request({
+      url: '/post/alllbyDid',
+      method: 'get',
+      params: {
+        depIdList: depIdList,
+      }
     });
   },
 }

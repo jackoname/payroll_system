@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import jdk.jfr.DataAmount;
+
 import lombok.Data;
 
 import java.io.Serializable;
+
+
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -39,7 +42,7 @@ public class Users implements Serializable {
     private String phone;
     private  Integer sex;
     private String email;
-    private String birthday;
+    private Date birthday;
     private String   name;
     @TableField("bankno")
     private String bankno;
@@ -53,4 +56,11 @@ public class Users implements Serializable {
     private List<Integer> depIdList;
     @TableField(exist = false)
     private List<Integer> postIdList;
+    @TableField(exist = false)
+    private String postName;
+    @TableField(exist = false)
+    private  String depName;
+    @TableField(exist = false)
+    private  String roleName;
+
 }

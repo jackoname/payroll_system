@@ -1,7 +1,25 @@
 import request from '@/utils/request'
-
-
 export default {
+  getDepList(searchModel){
+    return request({
+      url:'department/list',
+      method:'get',
+      params:{
+        pageNo:searchModel.pageNo,
+        pageSize:searchModel.pageSize,
+        depart:searchModel.depart,
+      }
+    });
+  },
+  getAllDep(){
+    return request({
+      url: '/department/all',
+      method: 'get',
+
+    });
+  },
+
+
   getRoleList(searchModel){
     return request({
       url:'role/list',
@@ -9,42 +27,37 @@ export default {
       params:{
         pageNo:searchModel.pageNo,
         pageSize:searchModel.pageSize,
-       rolename:searchModel.rolename,
+        rolename:searchModel.rolename,
       }
     });
   },
 
-  addRole(role){
+  addDep(dep){
     return request({
-      url:'role',
+      url:'department',
       method:'post',
-      data: role,
+      data: dep,
     });
   },
 
-  updateRole(role){
+  updateDep(dep){
     return request({
-      url:'role',
+      url:'department',
       method:'put',
-      data: role,
+      data:dep,
     });
   },
-  getRoleById(roleId){
+  getDepById(depId){
     return request({
-      url:`/role/${roleId}`,
+      url:`/department/${depId}`,
       method:'get',
     });
   },
-  delRoleById(roleId){
+  delDepById(depId){
     return request({
-      url:`/role/${roleId}`,
+      url:`/department/${depId}`,
       method:'delete',
     });
   },
-  getAllDep(){
-    return request({
-      url: '/department/all',
-      method: 'get'
-    });
-  },
+
 }

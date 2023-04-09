@@ -3,7 +3,7 @@
     <el-card  id="search">
       <el-row>
         <el-col :span="20">
-          <el-input v-model="searchModel.rolename" placeholder="部门名称" clearable></el-input>
+          <el-input v-model="searchModel.depart" placeholder="部门名称" clearable></el-input>
 
           <el-button type="primary" @click="getDepList"   round icon="el-icon-search">查询</el-button>
         </el-col>
@@ -12,12 +12,19 @@
         </el-col>
       </el-row>
     </el-card>
-
     <el-card>
       <el-table
         :data="depList"
         stripe
-        style="width: 100%">
+        style="width: 100%"
+        :header-cell-style="{'text-align':'center'}"
+        :cell-style="{'text-align':'center'}"
+        border="ture"
+        fit="ture"
+        stripe="true"
+        size="mini"
+        show-header="true"
+        highlight-current-row="ture">
         <el-table-column
           prop="date"
           label="#"
@@ -28,26 +35,33 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="id"
-          label="部门编号"
-          width="160">
-        </el-table-column>
+  <!--        <el-table-column-->
+  <!--          prop="id"-->
+  <!--          label="部门编号"-->
+  <!--          width="160">-->
+  <!--        </el-table-column>-->
 
         <el-table-column
           prop="depart"
           label="部门名称"
           width="160">
+          <template slot-scope="scope">
+            <el-tag size="small" effect="dark" type="success">{{scope.row.depart}}</el-tag>
+          </template>
         </el-table-column>
 
+
         <el-table-column
-          prop="depart_boss"
+          prop="departBoss"
           label="部门主管"
           width="160">
+          <template slot-scope="scope">
+            <el-tag size="small" effect="dark" type="success">{{scope.row.departBoss}}</el-tag>
+          </template>
         </el-table-column>
 
         <el-table-column
-          prop="dec"
+          prop="dsc"
           label="部门描述"
           width="560"
         >
@@ -76,38 +90,22 @@
 
     <!--用户对话框-->
     <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible"  >
-      <el-form :model="roleForm" :rules="rules" ref="roleFormRef">
+      <el-form :model="depForm" :rules="rules" ref="depFormRef">
 
-        <el-form-item label="角色名称" :label-width="formLabelWidth"  prop="rolename">
-          <el-input v-model="roleForm.rolename" autocomplete="off"></el-input>
+        <el-form-item label="部门名称" :label-width="formLabelWidth"  prop="depart">
+          <el-input v-model="depForm.depart" autocomplete="off"></el-input>
         </el-form-item>
-
-        <el-form-item label="角色描述" :label-width="formLabelWidth"  prop="roletag">
-          <el-input v-model="roleForm.roledec" autocomplete="off" type="number"></el-input>
+        <el-form-item label="部门主管" :label-width="formLabelWidth"  prop="departBoss">
+          <el-input v-model="depForm.departBoss" autocomplete="off" ></el-input>
         </el-form-item>
-
-
-        <el-form-item
-          prop="roleDesc"
-          label="权限设置"
-          :label-width="formLabelWidth"
-        >
-          <el-tree
-            ref="menuRef"
-            :data="menuList"
-            :props="menuProps"
-            node-key="menuid"
-            show-checkbox
-            style="width:85%"
-            default-expand-all
-
-          ></el-tree>
+        <el-form-item label="部门描述" :label-width="formLabelWidth"  prop="dsc ">
+          <el-input v-model="depForm.dsc" autocomplete="off" ></el-input>
         </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveRole">确 定</el-button>
+        <el-button type="primary" @click="saveDep">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -116,21 +114,16 @@
 </template>
 
 <script>
-  import roleApi from '@/api/roleMange';
-  import menuApi from "@/api/menuMange";
-  export default {
+  import depApi from '@/api/depMange';
+
+  export default{
     name: "dep",
     data(){
       return{
-        menuList:[],
-        menuProps:{
-          children:'children',
-          label:'title',
-        },
         flag1:true,
         formLabelWidth:"130px",
         dialogFormVisible:false,
-        roleForm:{},
+        depForm:{},
         title:"",
         total:0,
         searchModel:{
@@ -141,21 +134,23 @@
         rules:{
 
           depart: [
-            { required: true, message: '请输入角色描述', trigger: 'blur' },
+            { required: true, message: '请输入部门描述', trigger: 'blur' },
             { min: 1, max: 20, message: '长度在 1到 50 个字符', trigger: 'blur' }
           ],
+          departBoss: [
+            { required: true, message: '请输入部门描述', trigger: 'blur' },
+            { min: 1, max: 20, message: '长度在 1到 50 个字符', trigger: 'blur' }
+          ],
+
 
         }
       }
     },
     methods:{
-      saveRole(){
-        this.$refs.roleFormRef.validate((valid) => {
-          let che = this.$refs.menuRef.getCheckedKeys();
-          let halfche = this.$refs.menuRef.getHalfCheckedKeys();
-          this.roleForm.menuidList=che.concat(halfche);
+      saveDep(){
+        this.$refs.depFormRef.validate((valid) => {
           if (valid&&this.flag1) {
-            roleApi.addRole(this.roleForm).then(response=>{
+            depApi.addDep(this.depForm).then(response=>{
               this.$message(
                 {
                   message: response.message,
@@ -164,16 +159,12 @@
               //
               this.dialogFormVisible=false;
               //
-              this.getRoleList();
+              this.getDepList();
             })
           }
           else if(valid&&!this.flag1){
-            roleApi.updateRole(this.roleForm).then(response=>{
-              //成功
-              let che = this.$refs.menuRef.getCheckedKeys();
-              let halfche = this.$refs.menuRef.getHalfCheckedKeys();
-              this.roleForm.menuidList=che.concat(halfche);
-              console.log("oyhj:"+this.roleForm.menuidList)
+            depApi.updateDep(this.depForm).then(response=>{
+
 
               this.$message(
                 {
@@ -183,64 +174,59 @@
               //
               this.dialogFormVisible=false;
               //
-              this.getRoleList();
+              this.getDepList();
             })
           }
           else {
             console.log('error submit!!');
-            this.getRoleList();
+            this.getDepList();
             return false;
           }
         });
       },
       handleSizeChange(pageSize){
         this.searchModel.pageSize=pageSize;
-        this.getRoleList();
+        this.getDepList();
       },
-      currentPage4(){},
-      handleCurrentChange(pageNo){
-        this.searchModel.pageNo=pageNo;
-        this.getRoleList();
-      },
+
 
       getDepList(){
         depApi.getDepList(this.searchModel).then(response=>{
           this.depList=response.data.rows;
           this.total=response.data.total;
         });
+
       },
       openEditUI(){
         this.flag1=true;
-          this.title='新增角色';
+        this.title='新增部门';
         this.dialogFormVisible=true;
       },
-      editRole(id){
+      editDep(id){
         this.flag1=false;
-        roleApi.getRoleById(id).then(response => {
-          this.roleForm = response.data;
-
-
+        depApi.getDepById(id).then(response => {
+          this.depForm = response.data;
         });
-        this.title='编辑角色'
-        roleApi.getRoleById(id).then((response)=>{
+        this.title='编辑部门'
+        depApi.getDepById(id).then((response)=>{
           this.$refs.menuRef.setCheckedKeys(response.data.menuidList);
         });
 
         this.dialogFormVisible=true;
       },
 
-      delRole(role){
-        this.$confirm(`是否要删除${role.rolename}角色?`, '提示', {
+      delDep(dep){
+        this.$confirm(`是否要删除${dep.depart}?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          roleApi.delRoleById(role.id).then(response => {
+          depApi.delDepById(dep.id).then(response => {
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
-            this.getRoleList();
+            this.getDepList();
           })
         }).catch(() => {
           this.$message({
@@ -250,25 +236,20 @@
         });
       },
       clearForm(){
-        this.$refs.roleFormRef.clearValidate();
-        this.roleForm= {
-          roleId:"",
-          roledec:"",
-          rolename:"",
+        this.$refs.depFormRef.clearValidate();
+        this.depForm= {
+         departBoss:"",
+          dsc:"",
+          depatr:"",
 
         };
-        this.$refs.menuRef.setCheckedKeys([]);
-
       },
-      getAllmenu(){
-        menuApi.getAllMenu().then(response=>{
-          this.menuList=response.data;
-        })
-      }
+
     },
     created() {
-      this.getRoleList();
-      this.getAllmenu()
+
+      this.getDepList();
+
     },
 
   };

@@ -9,7 +9,7 @@ export default {
       params:{
         pageNo:searchModel.pageNo,
         pageSize:searchModel.pageSize,
-       rolename:searchModel.rolename,
+        rolename:searchModel.rolename,
       }
     });
   },

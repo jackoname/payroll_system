@@ -1,6 +1,8 @@
 package com.oyhj.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.oyhj.sys.entity.Post;
+import com.oyhj.sys.entity.UserRole;
 import com.oyhj.sys.mapper.PostMapper;
 import com.oyhj.sys.service.IPostService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,16 +28,16 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements IP
 
     @Override
     public void addPost(Post post) {
-
+        this.baseMapper.insert(post);
     }
 
     @Override
     public void updatePost(Post post) {
-
+        this.baseMapper.updateById(post);
     }
 
     @Override
     public Post getPostById(Integer id) {
-        return null;
+        return  this.baseMapper.selectById(id);
     }
 }

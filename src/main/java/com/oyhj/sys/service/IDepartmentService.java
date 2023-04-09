@@ -2,6 +2,7 @@ package com.oyhj.sys.service;
 
 import com.oyhj.sys.entity.Department;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.oyhj.sys.entity.Role;
 
 /**
  * <p>
@@ -13,4 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IDepartmentService extends IService<Department> {
 
+    void addDep(Department dep);
+
+    Department getDepById(Integer depId);
+
+    void updateDep(Department dep);
 }

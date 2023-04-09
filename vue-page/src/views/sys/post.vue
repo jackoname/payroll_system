@@ -3,9 +3,25 @@
     <el-card  id="search">
       <el-row>
         <el-col :span="20">
-          <el-input v-model="searchModel.rolename" placeholder="角色名称" clearable></el-input>
+          <el-input v-model="searchModel.post_name" placeholder="职位名称" clearable></el-input>
 
-          <el-button type="primary" @click="getRoleList"   round icon="el-icon-search">查询</el-button>
+          <el-select
+            :clearable="true"
+            v-model="searchModel.id"
+            @focus="getDepList"
+            @blur="myblur"
+            placeholder="请选择"
+            :loading="isload">
+            <el-option
+              v-for=" item in departmentList"
+              :key="item.id"
+              :value="item.id"
+              :label="item.depart"
+            >
+            </el-option>
+          </el-select>
+
+          <el-button type="primary" @click="getPostList"   round icon="el-icon-search">查询</el-button>
         </el-col>
         <el-col :span="4" align="right">
           <el-button  @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
@@ -15,9 +31,16 @@
 
     <el-card>
       <el-table
-        :data="roleList"
-        stripe
-        style="width: 100%">
+        :data="postList"
+        style="width: 100%"
+        :header-cell-style="{'text-align':'center'}"
+        :cell-style="{'text-align':'center'}"
+        border="ture"
+        fit="ture"
+        stripe="true"
+        size="mini"
+        show-header="true"
+        highlight-current-row="ture">
         <el-table-column
           prop="date"
           label="#"
@@ -29,25 +52,46 @@
         </el-table-column>
 
 
+<!--        <el-table-column-->
+<!--          prop="postId"-->
+<!--          label="职位标志"-->
+<!--          width="160">-->
+<!--          <template slot-scope="scope">-->
+<!--            <el-tag size="small" effect="dark" type="success">{{scope.row.postId}}</el-tag>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+
+
+
         <el-table-column
-          prop="rolename"
-          label="角色名称"
+          prop="postName"
+          label="职位名称"
           width="160">
-        </el-table-column>
-
-        <el-table-column
-          prop="roledec"
-          label="角色描述"
-          width="760"
-        >
-        </el-table-column>
-        <el-table-column
-
-          label="操作"
-        >
           <template slot-scope="scope">
-            <el-button type="primary" @click="editRole(scope.row.id)" icon="el-icon-edit" size="mini" circle></el-button>
-            <el-button type="danger"   @click="delRole(scope.row)"   icon="el-icon-delete" size="mini" circle></el-button>
+            <el-tag size="small" effect="dark" type="success">{{scope.row.postName}}</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="dsc"
+          label="职位描述"
+          width="160"
+        >
+        </el-table-column>
+
+        <el-table-column
+          prop="depName"
+          label="所属部门"
+          width="560">
+          <template slot-scope="scope">
+            <el-tag size="small" effect="dark" type="success">{{scope.row.depName}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作">
+          <template slot-scope="scope">
+            <el-button type="primary" @click="editpost(scope.row.postId)" icon="el-icon-edit" size="mini" circle></el-button>
+            <el-button type="danger"   @click="delPost(scope.row)"   icon="el-icon-delete" size="mini" circle></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,38 +109,38 @@
 
     <!--用户对话框-->
     <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible"  >
-      <el-form :model="roleForm" :rules="rules" ref="roleFormRef">
+      <el-form :model="postForm" :rules="rules" ref="postFormRef">
 
-        <el-form-item label="角色名称" :label-width="formLabelWidth"  prop="rolename">
-          <el-input v-model="roleForm.rolename" autocomplete="off"></el-input>
+        <el-form-item label="职位名称" :label-width="formLabelWidth"  prop="postName">
+          <el-input v-model="postForm.postName" autocomplete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="角色描述" :label-width="formLabelWidth"  prop="roletag">
-          <el-input v-model="roleForm.roledec" autocomplete="off" type="number"></el-input>
+        <el-form-item label="职位描述" :label-width="formLabelWidth" >
+          <el-input v-model="postForm.dsc" autocomplete="off" ></el-input>
         </el-form-item>
 
+      <el-form-item label="所属部门" :label-width="formLabelWidth" prop="postName">
 
-        <el-form-item
-          prop="roleDesc"
-          label="权限设置"
-          :label-width="formLabelWidth"
-        >
-          <el-tree
-            ref="menuRef"
-            :data="menuList"
-            :props="menuProps"
-            node-key="menuid"
-            show-checkbox
-            style="width:85%"
-            default-expand-all
+        <el-select
+          v-model="postForm.depid"
+          @focus="getDepList"
+          @blur="myblur"
+          placeholder="请选择"
+          :loading="isload">
+          <el-option
+            v-for=" item in departmentList"
+            :key="item.id"
+            :value="item.id"
+            :label="item.depart"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
 
-          ></el-tree>
-        </el-form-item>
       </el-form>
-
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveRole">确 定</el-button>
+        <el-button type="primary" @click="savePost">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -105,10 +149,10 @@
 </template>
 
 <script>
-  import roleApi from '@/api/roleMange';
-  import menuApi from "@/api/menuMange";
+  import postApi from '@/api/postMange';
+  import depApi from '@/api/depMange';
   export default {
-    name: "role",
+    name: "post",
     data(){
       return{
         menuList:[],
@@ -116,21 +160,24 @@
           children:'children',
           label:'title',
         },
+
+        isload:true,
+        departmentList:[],
         flag1:true,
         formLabelWidth:"130px",
         dialogFormVisible:false,
-        roleForm:{},
+        postForm:{},
         title:"",
         total:0,
         searchModel:{
           pageNo:1,
           pageSize:10,
         },
-        roleList:[],
+        postList:[],
+        depid:'',
         rules:{
-
-          rolename: [
-            { required: true, message: '请输入角色描述', trigger: 'blur' },
+          postName: [
+            { required: true, message: '不能为空', trigger: 'blur' },
             { min: 1, max: 20, message: '长度在 1到 50 个字符', trigger: 'blur' }
           ],
 
@@ -138,13 +185,10 @@
       }
     },
     methods:{
-      saveRole(){
-        this.$refs.roleFormRef.validate((valid) => {
-          let che = this.$refs.menuRef.getCheckedKeys();
-          let halfche = this.$refs.menuRef.getHalfCheckedKeys();
-          this.roleForm.menuidList=che.concat(halfche);
+      savePost(){
+        this.$refs.postFormRef.validate((valid) => {
           if (valid&&this.flag1) {
-            roleApi.addRole(this.roleForm).then(response=>{
+            postApi.addPost(this.postForm).then(response=>{
               this.$message(
                 {
                   message: response.message,
@@ -153,16 +197,11 @@
               //
               this.dialogFormVisible=false;
               //
-              this.getRoleList();
+              this.getDepList();
             })
           }
-          else if(valid&&!this.flag1){
-            roleApi.updateRole(this.roleForm).then(response=>{
-              //成功
-              let che = this.$refs.menuRef.getCheckedKeys();
-              let halfche = this.$refs.menuRef.getHalfCheckedKeys();
-              this.roleForm.menuidList=che.concat(halfche);
-              console.log("oyhj:"+this.roleForm.menuidList)
+        else  if(valid&&!this.flag1){
+            postApi.updatePost(this.postForm).then(response=>{
 
               this.$message(
                 {
@@ -172,64 +211,71 @@
               //
               this.dialogFormVisible=false;
               //
-              this.getRoleList();
+              this.getPostList();
             })
           }
           else {
             console.log('error submit!!');
-            this.getRoleList();
+            this.getPostList();
             return false;
           }
+
+          this.getPostList();
         });
       },
       handleSizeChange(pageSize){
         this.searchModel.pageSize=pageSize;
-        this.getRoleList();
+        this.getPostList();
       },
       currentPage4(){},
       handleCurrentChange(pageNo){
         this.searchModel.pageNo=pageNo;
-        this.getRoleList();
+        this.getPostList();
       },
 
-      getRoleList(){
-        roleApi.getRoleList(this.searchModel).then(response=>{
-          this.roleList=response.data.rows;
+      getPostList(){
+        postApi.getPostList(this.searchModel).then(response=>{
+          this.postList=response.data.rows;
           this.total=response.data.total;
         });
+
       },
+      getDepList(){
+        depApi.getAllDep().then(response=>{
+
+          this.departmentList=response.data;
+          this.isload=false;
+          console.log(this.departmentList);
+        });},
       openEditUI(){
         this.flag1=true;
-          this.title='新增角色';
+        this.title='新增职位';
         this.dialogFormVisible=true;
       },
-      editRole(id){
+      editpost(postId){
         this.flag1=false;
-        roleApi.getRoleById(id).then(response => {
-          this.roleForm = response.data;
-
-
+        postApi.getPostById(postId).then(response => {
+          this.postForm = response.data;
         });
-        this.title='编辑角色'
-        roleApi.getRoleById(id).then((response)=>{
-          this.$refs.menuRef.setCheckedKeys(response.data.menuidList);
-        });
-
+        this.title='编辑职位'
         this.dialogFormVisible=true;
       },
+      myblur(){
 
-      delRole(role){
-        this.$confirm(`是否要删除${role.rolename}角色?`, '提示', {
+        console.log(this.postForm)
+      },
+      delPost(post){
+        this.$confirm(`是否要删除${post.postName}的职位?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          roleApi.delRoleById(role.id).then(response => {
+          postApi.delPostById(post.postId).then(response => {
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
-            this.getRoleList();
+            this.getPostList();
           })
         }).catch(() => {
           this.$message({
@@ -237,27 +283,21 @@
             message: '已取消删除'
           });
         });
+        this.getPostList();
       },
       clearForm(){
-        this.$refs.roleFormRef.clearValidate();
-        this.roleForm= {
-          roleId:"",
-          roledec:"",
-          rolename:"",
+        this.$refs.postFormRef.clearValidate();
+        this.postForm= {
+          postId:"",
+          dsc:"",
+          postName:"",
 
         };
-        this.$refs.menuRef.setCheckedKeys([]);
-
       },
-      getAllmenu(){
-        menuApi.getAllMenu().then(response=>{
-          this.menuList=response.data;
-        })
-      }
+
     },
     created() {
-      this.getRoleList();
-      this.getAllmenu()
+      this.getPostList();
     },
 
   };

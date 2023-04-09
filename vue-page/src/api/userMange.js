@@ -10,6 +10,7 @@ export default {
         pageSize:searchModel.pageSize,
         username:searchModel.username,
         phone:searchModel.phone,
+        roleid:searchModel.roleid
       }
     });
   },

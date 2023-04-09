@@ -8,6 +8,7 @@ import com.oyhj.sys.mapper.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oyhj.sys.service.IMenuService;
 import com.oyhj.sys.service.IUsersService;
+import javafx.scene.input.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -135,6 +136,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Override
     @Transactional
     public void addUser(Users user) {
+        try {
+            user.setPostid(user.getPostIdList().get(0));
+            user.setDepid(user.getDepIdList().get(0));
+        }catch (Exception e){}
+
         baseMapper.insert(user);
         List<Integer> roleList = user.getRoleIdList();
         List<Integer> depList = user.getDepIdList();
@@ -145,11 +151,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             }
         if (depList!=null) {
 
-            userRoleMapper.insert(new UserRole(null,user.getUserId(),departmentMapper.selectById(depList.get(0)).getId()));
+            depUserMapper.insert(new DepUser(null,user.getUserId(),departmentMapper.selectById(depList.get(0)).getId()));
         }
 
         if (postList!=null) {
-            userRoleMapper.insert(new UserRole(null,user.getUserId(),postMapper.selectById(postList.get(0)).getPostId()));
+           postDepUserMapper.insert(new PostDepUser(null,user.getUserId(),postMapper.selectById(postList.get(0)).getPostId(),departmentMapper.selectById(depList.get(0)).getId()));
         }
 
 
@@ -190,6 +196,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Transactional
     public void updateUser(Users user) {
         // 更新用户表
+        try {
+            user.setPostid(user.getPostIdList().get(0));
+            user.setDepid(user.getDepIdList().get(0));
+        }catch (Exception e){}
+
         this.baseMapper.updateById(user);
         // 清除原有角色
         LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
@@ -220,7 +231,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         }
         if(roleIdList != null){
             for (Integer postId : postIdList) {
-                postDepUserMapper.insert(new PostDepUser(null,user.getUserId(),postId,null));
+                postDepUserMapper.insert(new PostDepUser(null,user.getUserId(),postId,user.getDepid()));
             }
         }
     }

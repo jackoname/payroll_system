@@ -9,4 +9,15 @@
             a.roleid = b.`id`
           AND a.userid = #{userId}
     </select>
+    <select id="getuserByRoleId" parameterType="Integer" resultType="Users">
+    SELECT t2.*
+    FROM
+    user_role t1
+    LEFT JOIN
+    users t2
+    ON
+    t1.userid=t2.userid
+    WHERE
+    t1.roleid =#{roleid}
+      </select>
 </mapper>
