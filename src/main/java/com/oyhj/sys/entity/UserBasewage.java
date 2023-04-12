@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -17,42 +16,35 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiaocai
- * @since 2023-04-02
+ * @since 2023-04-10
  */
-@TableName("wage_list")
-@NoArgsConstructor
-@AllArgsConstructor
+@TableName("user_basewage")
 @Data
-public class WageList implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserBasewage implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer listId;
+    @TableId(value = "wuid", type = IdType.AUTO)
+    private Integer wuid;
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Double basewage;
 
-    private String wageName;
+    private String dsc;
 
-    private Double wage;
+    private Integer userid;
 
-    private Integer roleId;
-
-    private Integer userId;
-
-    private LocalDateTime creattime;
-
-    private LocalDateTime endtime;
-
-    private String state;
-
-    private String des;
+    private Integer version;
 
     @TableField(exist = false)
     private String post_name;
     @TableField(exist = false)
     private  String depart;
-
+    @TableField(exist = false)
     private  String name;
+    @TableField (exist= false)
+    private String username;
+
 
 }

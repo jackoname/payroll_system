@@ -14,7 +14,7 @@ public class GC {
         String password="123456";
         String moduleName ="sys";
         String mapperLocation ="D:\\bishe\\payroll_management _system\\src\\main\\resources\\mapper\\"+moduleName;
-        String table="users,role,menu,role_menu,user_role,wage_list,stsff_wage,department,post,state,list_type,post_dep_user,dep_user";
+        String table="users,role,menu,role_menu,user_role,wage_list,stsff_wage,department,post,state,list_type,post_dep_user,dep_user,about_edu,user_basewage,usestate,taxandsafe";
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
                     builder.author("xiaocai") // 设置作者

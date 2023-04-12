@@ -1,9 +1,8 @@
 <template>
   <div>
-    <el-card>
-      <el-row :gutter="20">
-        <el-col :span="3"><div class="grid-content bg-purple">
-
+    <el-card  id="search">
+      <el-row>
+        <el-col :span="20">
           <el-select
             filterable
             :clearable="true"
@@ -20,25 +19,15 @@
             >
             </el-option>
           </el-select>
-        </div></el-col>
-        <el-col :span="4.5"><div class="grid-content bg-purple">
-          <el-date-picker
-            v-model="searchModel.value"
-            type="month"
-            format="yyyy 年 MM 月"
-            placeholder="选择月">
-          </el-date-picker>
-        </div></el-col>
-        <el-col :span="6"><div class="grid-content bg-purple">
-          <el-button type="primary" Style="margin-left: 6px" @click="getUserwageList" size="minin"  icon="el-icon-search" round></el-button>
-          <el-button type="primary" size="minin"   @click="clearUserwageList"icon="el-icon-refresh-left" round></el-button>
-        </div></el-col>
-        <el-col :span="10"><div class="grid-content bg-purple" align="right">
+          <el-button type="primary" @click="getUserwageList" round icon="el-icon-search" >查询</el-button>
+        </el-col>
+        <el-col :span="4" align="right">
           <el-button  @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
-        </div></el-col>
+        </el-col>
       </el-row>
-      </el-card>
-<el-card>
+    </el-card>
+
+    <el-card>
       <el-table
         :data="userwageList"
         :header-cell-style="{'text-align':'center'}"
@@ -66,23 +55,24 @@
         </el-table-column>
 
         <el-table-column
-          label="绩效工资/元"
+          label="基本工资/元"
           :sortable=true
-          prop="wage">
+          prop="basewage">
+        </el-table-column>
+        <el-table-column
+          label="备注"
+          prop="dsc">
         </el-table-column>
 
         <el-table-column
-          label="月份 "
-          prop="endtime">
+          prop="username"
+          label="用户名">
           <template slot-scope="scope">
-          {{scope.row.endtime[0]}} 年 {{scope.row.endtime[1]}} 月
+            <el-tag size="small" effect="dark" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.username}}</el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="备注"
-          prop="des">
-        </el-table-column>
+
         <el-table-column
           prop="depart"
           label="部门">
@@ -99,6 +89,9 @@
             <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.post_name}}</el-tag>
           </template>
         </el-table-column>
+
+
+
 
         <el-table-column
           label="操作"
@@ -127,41 +120,30 @@
 
 
     <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible"  >
-      <el-form :model="userprewageForm" :rules="rules" ref="userprewageFormRef">
+      <el-form :model="userwageForm" :rules="rules" ref="userwageFormRef">
+        <el-form-item>
 
-        <el-form-item label="请选择月份" :label-width="formLabelWidth">
-          <div class="block"   STYLE="width:200px">
-            <el-date-picker
-
-              v-model="userprewageForm.endtime"
-              type="month"
-              placeholder="选择月">
-            </el-date-picker>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="请选择职工" :label-width="formLabelWidth">
-          <el-select
-            :disabled="isuse"
-            :clearable=true
-            v-model="userprewageForm.userId"
-            @blur="myblur"
-            @focus="myfocus"
-            placeholder="请选择或搜索"
-          >
-
-            <el-option
-              v-for=" item in userList"
-              :key="item.userId"
-              :value="item.userId"
-              :label="item.name"
+          <el-form-item label="请选择职工" :label-width="formLabelWidth">
+            <el-select
+              :disabled="isuse"
+              :clearable=true
+              v-model="userwageForm.userid"
+              @blur="myblur"
+              @focus="myfocus"
+              placeholder="请选择或搜索"
             >
-            </el-option>
-          </el-select>
+              <el-option
+                v-for=" item in userList"
+                :key="item.userId"
+                :value="item.userId"
+                :label="item.name"
+              >
+              </el-option>
+            </el-select>
         </el-form-item>
-
-        <el-form-item label="绩效工资" :label-width="formLabelWidth"   >
-          <el-input v-model="userprewageForm.wage" autocomplete="off" type="number" Style="width: 172px" oninput="if(value<0)value=0"></el-input>
+        </el-form-item>
+        <el-form-item label="基础工资" :label-width="formLabelWidth"   >
+        <el-input v-model="userwageForm.basewage" autocomplete="off" type="number" Style="width: 172px" oninput="if(value<0)value=0"></el-input>
 
         </el-form-item>
 
@@ -169,7 +151,7 @@
 
 
         <el-form-item label=" 备注" :label-width="formLabelWidth"  >
-          <el-input v-model="userprewageForm.des" autocomplete="off"></el-input>
+          <el-input v-model="userwageForm.dsc" autocomplete="off"></el-input>
         </el-form-item>
 
       </el-form>
@@ -188,12 +170,42 @@
   import  roleApi from '@/api/roleMange'
   import  depApi from '@/api/depMange'
   import  postApi from '@/api/postMange'
-  import userprewageApi from "@/api/userprewage";
   import userwageApi from "@/api/userwage";
 
   export default {
     name: "user",
     data(){
+      var checkEmail = (rule, value, callback) => {
+        var reg = /^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/;
+        if (!reg.test(value)) {
+          return callback(new Error('邮箱格式错误！'));
+        }
+        callback();
+      };
+      var checkphone = (rule, value, callback) => {
+        var reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
+        if (!reg.test(value)) {
+          return callback(new Error('手机号格式错误！'));
+        }
+        callback();
+      };
+
+      var checkidcard= (rule, value, callback) => {
+        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+        if (!reg.test(value)) {
+          return callback(new Error('身份证格式错误！'));
+        }
+        callback();
+      };
+
+      var checkbankno= (rule, value, callback) => {
+        var reg = /^[1-9]\d{9,29}$/;
+        if (!reg.test(value)) {
+          return callback(new Error('银行卡格式错误！'));
+        }
+        callback();
+      };
+
       return{
         //photo:"https://img1.baidu.com/it/u=4096959686,4145726040&fm=253&fmt=auto&app=138&f=JPEG?sec=1683017670&t=88663d7cd6f8d44dcd99a2d02f38584f",
         roleList: [],
@@ -204,15 +216,13 @@
         table:false,
         postList:[],
         flag1:true,
-        value1:'',
         direction: 'rtl',//rtl / ltr / ttb / btt
         formLabelWidth:"130px",
         dialogFormVisible:false,
-        userprewageForm:{
-          des:"",
-          userId:"",
-          wage:"",
-
+        userwageForm:{
+          dsc:"",
+          userid:"",
+          basewage:"",
         },
         userwageList:[],
         total:0,
@@ -229,11 +239,11 @@
     methods:{
 
       saveUser(){
-        console.log(this.userprewageForm)
-        this.$refs.userprewageFormRef.validate((valid) => {
+        console.log(this.userwageForm)
+        this.$refs.userwageFormRef.validate((valid) => {
 
           if (valid&&this.flag1==true) {
-            userprewageApi.addUserprewage(this.userprewageForm).then(response=>{
+            userwageApi.addUserwage(this.userwageForm).then(response=>{
               //成功
 
               this.$message(
@@ -249,7 +259,7 @@
           }
           else if(valid&&this.flag1==false){
 
-            userwageApi.updateUserwage(this.userprewageForm).then(response=>{
+            userwageApi.updateUserwage(this.userwageForm).then(response=>{
               this.$message(
                 {
                   message: response.message,
@@ -295,19 +305,16 @@
         });
 
       },
-      clearUserwageList(){
-        this.searchModel.userId=null;
-        this.getUserwageList();
-      },
+
       getUserwageList(){
-        userprewageApi.getUserwageList(this.searchModel).then(response=>{
+      userwageApi.getUserwageList(this.searchModel).then(response=>{
 
           this.userwageList=response.data.rows;
 
           this.total=response.data.total;
 
           console.log(this.userwageList)
-        },)
+      },)
       },
       openEditUI(){
         this.isuse=false;
@@ -319,7 +326,7 @@
         userwageApi.getUserwageById(userId).then(response => {
           this.isuse=true;
           this.flag1=false;
-          this.userprewageForm = response.data;
+          this.userwageForm = response.data;
         });
         this.title='编辑职工工资'
         this.flag=false;
@@ -347,14 +354,28 @@
         });
       },
       clearForm(){
-        this.$refs.userprewageFormRef.clearValidate();
-        this.userprewageForm= {
-
-
-
-
-
-
+        this.$refs.userwageFormRef.clearValidate();
+        this.userwageForm= {
+          userId:"",
+          username:"",
+          password:"",
+          isuse:"",
+          stateuser:"",
+          phone:"" ,
+          email:"",
+          name:"",
+          age:"",
+          depIdList:[],
+          postIdList:[],
+          roleIdList:[],
+          birthday:"",
+          remarks:"",
+          bankno:"",
+          idcardno:"",
+          address:"",
+          sex:"",
+          depName:"",
+          postName:""
         };
       },
 

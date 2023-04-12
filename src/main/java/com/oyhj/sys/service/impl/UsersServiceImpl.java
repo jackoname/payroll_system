@@ -56,7 +56,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         Map<String,Object> data = null;
         wrapper.eq(Users::getUsername,user.getUsername());
         Users loginUser = this.baseMapper.selectOne(wrapper);
-        System.out.println("*************/"+(loginUser.getIsuse() == 0));
+       // System.out.println("*************/"+(loginUser.getIsuse() == 0));
         if (+loginUser.getIsuse()==0) {
             data =new HashMap<>();
             data.put("ban",user);
