@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50720
 File Encoding         : 65001
 
-Date: 2023-04-10 01:30:50
+Date: 2023-04-13 02:02:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -70,7 +70,7 @@ CREATE TABLE `dep_user` (
   `depid` int(11) DEFAULT NULL,
   `userid` int(11) DEFAULT NULL,
   PRIMARY KEY (`udid`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of dep_user
@@ -79,7 +79,6 @@ INSERT INTO `dep_user` VALUES ('2', '28', '1');
 INSERT INTO `dep_user` VALUES ('12', '29', '1');
 INSERT INTO `dep_user` VALUES ('20', '1', '29');
 INSERT INTO `dep_user` VALUES ('23', '1', '28');
-INSERT INTO `dep_user` VALUES ('26', '1', '3');
 INSERT INTO `dep_user` VALUES ('27', '30', '1');
 INSERT INTO `dep_user` VALUES ('29', '31', '1');
 INSERT INTO `dep_user` VALUES ('30', '3', '31');
@@ -89,23 +88,30 @@ INSERT INTO `dep_user` VALUES ('33', '1', '32');
 INSERT INTO `dep_user` VALUES ('34', '1', '33');
 INSERT INTO `dep_user` VALUES ('36', '35', '1');
 INSERT INTO `dep_user` VALUES ('37', '1', '30');
+INSERT INTO `dep_user` VALUES ('38', '37', '1');
 
 -- ----------------------------
 -- Table structure for list_type
 -- ----------------------------
 DROP TABLE IF EXISTS `list_type`;
 CREATE TABLE `list_type` (
-  `list_id` int(11) NOT NULL AUTO_INCREMENT,
+  `list_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dsc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `createtime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `createtime` datetime NOT NULL,
+  `flag` int(2) NOT NULL,
   PRIMARY KEY (`list_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of list_type
 -- ----------------------------
-INSERT INTO `list_type` VALUES ('1', '', null, null);
+INSERT INTO `list_type` VALUES ('1', '加班', null, '2023-04-12 00:00:00', '1');
+INSERT INTO `list_type` VALUES ('2', '节日补贴', null, '2023-04-12 00:00:00', '1');
+INSERT INTO `list_type` VALUES ('3', '上班玩手机', null, '2023-04-12 00:00:00', '0');
+INSERT INTO `list_type` VALUES ('4', '早退', null, '2023-04-12 00:00:00', '0');
+INSERT INTO `list_type` VALUES ('5', '上班迟到', null, '2023-04-12 00:00:00', '0');
+INSERT INTO `list_type` VALUES ('6', '业绩突出', null, '2023-04-12 01:13:59', '1');
 
 -- ----------------------------
 -- Table structure for menu
@@ -122,7 +128,7 @@ CREATE TABLE `menu` (
   `parent_id` int(11) DEFAULT NULL,
   `isleaf` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`menuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of menu
@@ -131,17 +137,34 @@ INSERT INTO `menu` VALUES ('1', 'Layout', '/sys', '/sys/user', 'sysManage', '公
 INSERT INTO `menu` VALUES ('2', 'sys/user', 'user', null, 'userList', '职工管理', 'el-icon-user', '1', 'Y');
 INSERT INTO `menu` VALUES ('3', 'sys/role', 'role', null, 'roleList', '角色管理', 'el-icon-key', '1', 'Y');
 INSERT INTO `menu` VALUES ('4', 'Layout', '/syspay', '/syspay/payroll', '工资管理模块', '工资管理', 'el-icon-s-finance\r\nel-icon-s-finance\r\nel-icon-s-finance\r\nel-icon-s-finance\r\nel-icon-s-finance', '0', 'N');
-INSERT INTO `menu` VALUES ('5', 'syspay/payroll', 'payroll', '', '薪资结构管理', '薪资结构管理', 'form', '4', 'Y');
-INSERT INTO `menu` VALUES ('6', 'syspay/performance', 'performance', '', '绩效管理', '绩效管理', 'form', '4', 'Y');
-INSERT INTO `menu` VALUES ('7', 'syspay/attendance', 'attendance', '', '考勤管理', '考勤管理', 'form', '4', 'Y');
-INSERT INTO `menu` VALUES ('8', 'Layout', '/mypay', '/mypay/mypayroll', '我的工资', '我的工资', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('5', 'syspay/wagemanger', 'wagemanger', '', '职工工资管理', '职工工资管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('6', 'syspay/performance', 'performance', '', '绩效工资管理', '绩效工资管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('7', 'syspay/performance', 'syspay/performance', '', '奖惩事项管理管理', '奖惩事项管理管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('8', 'Layout', '/mypay', '/mypay/mypayroll', '工资核算', '工资核算', 'form', '0', 'N');
 INSERT INTO `menu` VALUES ('9', 'mypay/mypayroll', 'mypayroll', '', '工资明细', '工资明细', 'form', '8', 'Y');
 INSERT INTO `menu` VALUES ('10', 'mypay/mypayroll', 'mypayroll', '', '工资明细', '工资明细', 'form', '8', 'Y');
-INSERT INTO `menu` VALUES ('11', 'Layout', '/mypay', '/mypay/mypayroll', '我的工资', '我的工资', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('11', 'Layout', '/mypay', '/mypay/mypayroll', '工资放发', '工资发放', 'form', '0', 'N');
 INSERT INTO `menu` VALUES ('12', 'mypay/mypayroll', 'mypayroll', '', '工资明细', '工资明细', 'form', '11', 'Y');
 INSERT INTO `menu` VALUES ('13', 'mypay/mypayroll', 'mypayroll', '', '工资明细', '工资明细', 'suitcase-', '11', 'Y');
 INSERT INTO `menu` VALUES ('14', 'sys/department', 'department', null, 'depList', '部门管理', 'el-icon-suitcase', '1', 'Y');
 INSERT INTO `menu` VALUES ('15', 'sys/post', 'post', null, 'postList', '职位管理', 'el-icon-monitor', '1', 'Y');
+INSERT INTO `menu` VALUES ('16', 'Layout', '/reimbursement', '/reimbursement/payroll', '报销管理', '报销管理', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('17', 'Layout', '/feedback', '/feedback/payroll', '反馈管理', '反馈管理', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('18', 'Layout', '/wagelist', '/wagelist/payroll', '工资报表管理', '工资报表管理', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('19', 'Layout', '/mywage', '/mywage/payroll', '我的工资', '我的工资', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('20', 'Layout', '/myreimbursement', '/myreimbursement/payroll', '报销申请', '报销申请', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('21', 'Layout', '/myadvice', '/myadvice/payroll', '反馈意见', '反馈意见', 'form', '0', 'N');
+INSERT INTO `menu` VALUES ('22', 'myadvice/payroll', 'payroll', null, null, '反馈意见', 'form', '21', 'Y');
+INSERT INTO `menu` VALUES ('23', 'myreimbursement/payroll', 'payroll', null, null, '报销申请', 'form', '20', 'Y');
+INSERT INTO `menu` VALUES ('24', 'mywage/payroll', 'payroll', null, null, '我的工资', 'form', '19', 'Y');
+INSERT INTO `menu` VALUES ('25', 'wagelist/payroll', 'payroll', null, null, '工资报表管理', 'form', '18', 'Y');
+INSERT INTO `menu` VALUES ('26', 'feedback/payroll', 'payroll', null, null, '反馈管理', 'form', '17', 'Y');
+INSERT INTO `menu` VALUES ('27', 'reimbursement/payroll', 'payroll', null, null, '报销管理', 'form', '16', 'Y');
+INSERT INTO `menu` VALUES ('28', 'syspay/performance', 'performance', '', '奖励管理', '奖励管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('29', 'syspay/performance', 'performance', '', '补贴管理', '补贴管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('30', 'syspay/performance', 'performance', '', '罚款管理', '罚款管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('31', 'syspay/performance', 'performance', '', '五险一金管理', '五险一金管理', 'form', '4', 'Y');
+INSERT INTO `menu` VALUES ('32', 'syspay/performance', 'performance', '', '纳税管理', '纳税管理', 'form', '4', 'Y');
 
 -- ----------------------------
 -- Table structure for post
@@ -176,7 +199,7 @@ CREATE TABLE `post_dep_user` (
   `postid` int(11) DEFAULT NULL,
   `depid` int(11) DEFAULT NULL,
   PRIMARY KEY (`pduid`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of post_dep_user
@@ -190,6 +213,7 @@ INSERT INTO `post_dep_user` VALUES ('38', '33', '1', '1');
 INSERT INTO `post_dep_user` VALUES ('39', '34', '1', '1');
 INSERT INTO `post_dep_user` VALUES ('40', '35', '7', '1');
 INSERT INTO `post_dep_user` VALUES ('41', '30', '7', '1');
+INSERT INTO `post_dep_user` VALUES ('42', '37', '2', '1');
 
 -- ----------------------------
 -- Table structure for role
@@ -220,7 +244,7 @@ CREATE TABLE `role_menu` (
   `menu_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=328 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of role_menu
@@ -236,26 +260,43 @@ INSERT INTO `role_menu` VALUES ('125', '8', '1');
 INSERT INTO `role_menu` VALUES ('126', '8', '4');
 INSERT INTO `role_menu` VALUES ('131', '3', '3');
 INSERT INTO `role_menu` VALUES ('132', '3', '7');
-INSERT INTO `role_menu` VALUES ('182', '7', '1');
-INSERT INTO `role_menu` VALUES ('183', '7', '2');
-INSERT INTO `role_menu` VALUES ('184', '7', '3');
-INSERT INTO `role_menu` VALUES ('185', '7', '14');
-INSERT INTO `role_menu` VALUES ('186', '7', '15');
-INSERT INTO `role_menu` VALUES ('187', '7', '4');
-INSERT INTO `role_menu` VALUES ('188', '7', '5');
-INSERT INTO `role_menu` VALUES ('189', '7', '6');
-INSERT INTO `role_menu` VALUES ('190', '7', '7');
-INSERT INTO `role_menu` VALUES ('191', '7', '8');
-INSERT INTO `role_menu` VALUES ('192', '7', '9');
-INSERT INTO `role_menu` VALUES ('193', '7', '10');
-INSERT INTO `role_menu` VALUES ('194', '7', '11');
-INSERT INTO `role_menu` VALUES ('195', '7', '12');
-INSERT INTO `role_menu` VALUES ('196', '7', '13');
 INSERT INTO `role_menu` VALUES ('203', '13', '1');
 INSERT INTO `role_menu` VALUES ('204', '13', '2');
 INSERT INTO `role_menu` VALUES ('205', '13', '3');
 INSERT INTO `role_menu` VALUES ('206', '13', '14');
 INSERT INTO `role_menu` VALUES ('207', '13', '15');
+INSERT INTO `role_menu` VALUES ('296', '7', '1');
+INSERT INTO `role_menu` VALUES ('297', '7', '2');
+INSERT INTO `role_menu` VALUES ('298', '7', '3');
+INSERT INTO `role_menu` VALUES ('299', '7', '14');
+INSERT INTO `role_menu` VALUES ('300', '7', '15');
+INSERT INTO `role_menu` VALUES ('301', '7', '4');
+INSERT INTO `role_menu` VALUES ('302', '7', '5');
+INSERT INTO `role_menu` VALUES ('303', '7', '6');
+INSERT INTO `role_menu` VALUES ('304', '7', '7');
+INSERT INTO `role_menu` VALUES ('305', '7', '28');
+INSERT INTO `role_menu` VALUES ('306', '7', '29');
+INSERT INTO `role_menu` VALUES ('307', '7', '30');
+INSERT INTO `role_menu` VALUES ('308', '7', '31');
+INSERT INTO `role_menu` VALUES ('309', '7', '32');
+INSERT INTO `role_menu` VALUES ('310', '7', '8');
+INSERT INTO `role_menu` VALUES ('311', '7', '9');
+INSERT INTO `role_menu` VALUES ('312', '7', '10');
+INSERT INTO `role_menu` VALUES ('313', '7', '11');
+INSERT INTO `role_menu` VALUES ('314', '7', '12');
+INSERT INTO `role_menu` VALUES ('315', '7', '13');
+INSERT INTO `role_menu` VALUES ('316', '7', '16');
+INSERT INTO `role_menu` VALUES ('317', '7', '27');
+INSERT INTO `role_menu` VALUES ('318', '7', '17');
+INSERT INTO `role_menu` VALUES ('319', '7', '26');
+INSERT INTO `role_menu` VALUES ('320', '7', '18');
+INSERT INTO `role_menu` VALUES ('321', '7', '25');
+INSERT INTO `role_menu` VALUES ('322', '7', '19');
+INSERT INTO `role_menu` VALUES ('323', '7', '24');
+INSERT INTO `role_menu` VALUES ('324', '7', '20');
+INSERT INTO `role_menu` VALUES ('325', '7', '23');
+INSERT INTO `role_menu` VALUES ('326', '7', '21');
+INSERT INTO `role_menu` VALUES ('327', '7', '22');
 
 -- ----------------------------
 -- Table structure for staff_wage
@@ -288,7 +329,7 @@ CREATE TABLE `staff_wage` (
   KEY `ufk` (`user_id`),
   CONSTRAINT `sfk` FOREIGN KEY (`state`) REFERENCES `state` (`state_id`),
   CONSTRAINT `ufk` FOREIGN KEY (`user_id`) REFERENCES `users` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of staff_wage
@@ -380,12 +421,12 @@ CREATE TABLE `users` (
   KEY `psfk` (`postid`),
   CONSTRAINT `defk` FOREIGN KEY (`depid`) REFERENCES `department` (`id`),
   CONSTRAINT `psfk` FOREIGN KEY (`postid`) REFERENCES `post` (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('3', 'admin', '$2a$10$F8ZZsvjHp0Q5ehJ/yVGDDOZTsp2OKmTfPGRoPZSneIRdepjnGzFGe', '1', '13128281923', '599345199@qq.com', '1', '2', '18', '优秀', '广州', '1', '1999-01-08', '2023-04-09 19:19:20', '欧阳洪健', '12345646879789', '441625199901083338', '\"https://img1.baidu.com/it/u=4096959686,4145726040&fm=253&fmt=auto&app=138&f=JPEG?sec=1683017670&t=88663d7cd6f8d44dcd99a2d02f38584f\"', null, null, null, null, null);
+INSERT INTO `users` VALUES ('3', 'admin', '$2a$10$uMGze7F7ogeasqPE2oPyyuQDV9hRpLjfe3.MTILY8pvCcjjMyWntm', '1', '13128281923', '599345199@qq.com', '1', '2', '22', 'oyhj', '', '1', '2023-03-26', '2023-04-12 00:27:05', '欧阳洪健', '4564646546456', '441625444464664463', null, null, null, null, null, null);
 INSERT INTO `users` VALUES ('28', 'ces', '$2a$10$zwwyQErLiMNUPwuX7UqLDO5M9ywEW8diTMfwYY73QGtkItB2b1gkK', '1', '13128596471', '599345199@qq.com', '1', '2', '12', '', '威威', '1', '2022-04-05', '2023-04-08 14:44:23', '海绵宝宝', '123232313123', '123321232321312', null, null, null, null, null, null);
 INSERT INTO `users` VALUES ('29', 'yanjie', '$2a$10$0SjUHAyJ8EUww33ECDF79.CozmI78WkLAPKbhLtLWEdOslIgjagTu', '0', '13569594632', '515@qq.com', '1', '3', '28', null, null, '2', '2023-04-19', '2023-04-09 15:19:39', '燕飞', '489654125633', '445698777155535563', null, null, null, null, null, null);
 INSERT INTO `users` VALUES ('30', 'htl', '$2a$10$/Ilet1ElY.AFQM53OwDTvO2KQkaQsod6NA9POwgjmhSrNIH4fqdOS', '1', '15896969165', '4545646@163.com', '1', '7', '33', null, null, '1', '2016-05-11', '2023-04-09 22:45:17', '灰太狼', '74588484994', '114561112528888627', null, null, null, null, null, null);
@@ -393,6 +434,32 @@ INSERT INTO `users` VALUES ('31', 'pdx', '$2a$10$ZBmKx0BPfQ5rbQMoZ/5PpOSB5swQzBQ
 INSERT INTO `users` VALUES ('32', 'zyg', '$2a$10$gfRHJYVXSO4EX8580DRyLuMi9NaO/vRXpqJ0Y5Pl7.r9wDc8F4Z1K', '1', '15233369654', '85526@99.com', '1', '1', '15', null, null, '2', '2023-04-10', '2023-04-09 22:17:58', '章鱼哥', '85465542250255', '478541233695545', null, null, null, null, null, null);
 INSERT INTO `users` VALUES ('33', 'xlb', '$2a$10$1fXG/kf.RBvJCFmwuXOSGOEMILXzL1XQWyaMbSNjNbWoRsNQcuoBm', '1', '13558621555', '45445@qq.com', '1', '1', '32', 'dfd', null, '1', '2023-04-05', '2023-04-09 22:18:10', '蟹老板', '856654645456', '131596484564441414', null, null, null, null, null, null);
 INSERT INTO `users` VALUES ('35', 'ggBoy', '$2a$10$XEOLQGNUip83xAK52uJ9SOEzTvt2WmOTn.t1Erkw2if76n0Ydm9M2', '0', '13128281923', '1@qq.com', '1', '7', '23', '', '', '1', '2023-04-06', null, '猪猪侠', '3123231232323', '122233331232332312', null, null, null, null, null, null);
+
+-- ----------------------------
+-- Table structure for user_basewage
+-- ----------------------------
+DROP TABLE IF EXISTS `user_basewage`;
+CREATE TABLE `user_basewage` (
+  `wuid` int(11) NOT NULL AUTO_INCREMENT,
+  `basewage` double(18,3) DEFAULT NULL,
+  `dsc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `userid` int(11) unsigned NOT NULL,
+  `version` int(255) DEFAULT NULL,
+  `creatdate` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`wuid`),
+  KEY `wu` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of user_basewage
+-- ----------------------------
+INSERT INTO `user_basewage` VALUES ('1', '8500.000', '工资更新替换', '3', '0', '2023-04-11 22:48:56');
+INSERT INTO `user_basewage` VALUES ('2', '5500.000', '工资更新替换', '28', '0', '2023-04-13 01:40:05');
+INSERT INTO `user_basewage` VALUES ('3', '3200.000', '', '31', '1', null);
+INSERT INTO `user_basewage` VALUES ('4', '4500.000', '工资删除', '32', '-1', '2023-04-11 22:41:16');
+INSERT INTO `user_basewage` VALUES ('5', '9500.000', '工资更新替换', '3', '0', '2023-04-11 22:48:57');
+INSERT INTO `user_basewage` VALUES ('6', '10000.000', '工资更新替换', '3', '0', '2023-04-11 22:50:41');
+INSERT INTO `user_basewage` VALUES ('7', '12500.000', '工资更新替换', '3', '0', '2023-04-13 00:08:23');
 
 -- ----------------------------
 -- Table structure for user_role
@@ -405,19 +472,19 @@ CREATE TABLE `user_role` (
   PRIMARY KEY (`id`),
   KEY `rk` (`roleid`),
   CONSTRAINT `rk` FOREIGN KEY (`roleid`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of user_role
 -- ----------------------------
 INSERT INTO `user_role` VALUES ('34', '29', '8');
 INSERT INTO `user_role` VALUES ('37', '28', '8');
-INSERT INTO `user_role` VALUES ('40', '3', '7');
 INSERT INTO `user_role` VALUES ('44', '31', '8');
 INSERT INTO `user_role` VALUES ('47', '32', '8');
 INSERT INTO `user_role` VALUES ('48', '33', '8');
 INSERT INTO `user_role` VALUES ('50', '35', '8');
 INSERT INTO `user_role` VALUES ('51', '30', '13');
+INSERT INTO `user_role` VALUES ('52', '3', '7');
 
 -- ----------------------------
 -- Table structure for usestate
@@ -443,22 +510,24 @@ INSERT INTO `usestate` VALUES ('4', '已离职', '4');
 -- ----------------------------
 DROP TABLE IF EXISTS `wage_list`;
 CREATE TABLE `wage_list` (
-  `list_id` int(11) NOT NULL,
+  `list_id` int(11) DEFAULT NULL,
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wage_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `wage` double(255,0) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
   `user_id` int(11) unsigned DEFAULT NULL,
   `creattime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `endtime` datetime DEFAULT NULL,
+  `endtime` date NOT NULL,
   `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `flag` int(2) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `listfk` (`list_id`),
-  CONSTRAINT `listfk` FOREIGN KEY (`list_id`) REFERENCES `list_type` (`list_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `listfk` (`list_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of wage_list
 -- ----------------------------
-INSERT INTO `wage_list` VALUES ('1', '1', '基本工资', '2000', '1', '1', null, null, null, null);
+INSERT INTO `wage_list` VALUES ('1', '1', '绩效工资', '2000', '1', '3', '2023-04-12 23:57:49', '2023-04-12', null, null, '欧阳洪健', '1');
+INSERT INTO `wage_list` VALUES (null, '2', null, '561', null, '30', null, '2022-12-31', null, '', '灰太狼', null);

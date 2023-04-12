@@ -39,6 +39,7 @@ public class RoleController {
 
         Page<Role> page =new Page<>(pageNo,pageSize);
         roleService.page(page,objectLambdaQueryWrapper);
+
         Map<String,Object>data =new HashMap<>();
         data.put("total",page.getTotal());
         data.put("rows",page.getRecords());

@@ -1,4 +1,5 @@
-+ <template>
+
+<template>
   <div>
     <el-card  id="search">
       <el-row>
@@ -16,15 +17,8 @@
     <el-card>
       <el-table
         :data="roleList"
-        style="width: 100%"
-        :header-cell-style="{'text-align':'center'}"
-        :cell-style="{'text-align':'center'}"
-        border="ture"
-        fit="ture"
-        stripe="true"
-        size="mini"
-        show-header="true"
-        highlight-current-row="ture">
+        stripe
+        style="width: 100%">
         <el-table-column
           prop="date"
           label="#"
@@ -40,9 +34,6 @@
           prop="rolename"
           label="角色名称"
           width="160">
-            <template slot-scope="scope">
-              <el-tag size="small" effect="dark" type="success">{{scope.row.rolename}}</el-tag>
-            </template>
         </el-table-column>
 
         <el-table-column
@@ -82,7 +73,7 @@
         </el-form-item>
 
         <el-form-item label="角色描述" :label-width="formLabelWidth"  prop="roletag">
-          <el-input v-model="roleForm.roledec" autocomplete="off" ></el-input>
+          <el-input v-model="roleForm.roledec" autocomplete="off" type="number"></el-input>
         </el-form-item>
 
 
@@ -168,7 +159,7 @@
           }
           else if(valid&&!this.flag1){
             roleApi.updateRole(this.roleForm).then(response=>{
-
+              //成功
               let che = this.$refs.menuRef.getCheckedKeys();
               let halfche = this.$refs.menuRef.getHalfCheckedKeys();
               this.roleForm.menuidList=che.concat(halfche);
@@ -210,7 +201,7 @@
       },
       openEditUI(){
         this.flag1=true;
-          this.title='新增角色';
+        this.title='新增角色';
         this.dialogFormVisible=true;
       },
       editRole(id){

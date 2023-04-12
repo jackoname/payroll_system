@@ -1,4 +1,4 @@
-+ <template>
+ <template>
   <div>
     <el-card  id="search">
       <el-row>
@@ -242,11 +242,10 @@
       },
       getDepList(){
         depApi.getAllDep().then(response=>{
-
           this.departmentList=response.data;
-          this.isload=false;
-          console.log(this.departmentList);
-        });},
+        })
+        this.isload=false;
+      },
       openEditUI(){
         this.flag1=true;
         this.title='新增职位';
