@@ -1,16 +1,26 @@
 <template>
   <div>
     <el-card>
-      <el-row :gutter="20">
+      <el-row :gutter="10">
         <el-col :span="3"><div class="grid-content bg-purple">
-
+          <div class="block">
+            <el-cascader
+              placeholder="试试搜索：奖励"
+              v-model="searchModel.option"
+              :options="listType2"
+              :clearable="true"
+              filterable>
+            </el-cascader>
+          </div>
+        </div></el-col>
+          <el-col :span="2"><div class="grid-content bg-purple">
           <el-select
             filterable
             :clearable="true"
             v-model="searchModel.userId"
 
             @focus="myfocus"
-            placeholder="请选择或搜索"
+            placeholder="请选择或搜索职工"
           >
             <el-option
               v-for=" item in userList"
@@ -21,7 +31,8 @@
             </el-option>
           </el-select>
         </div></el-col>
-        <el-col :span="4.5"><div class="grid-content bg-purple">
+
+        <el-col :span="2.5"><div class="grid-content bg-purple">
           <el-date-picker
             v-model="searchModel.endtime"
             type="month"
@@ -30,16 +41,16 @@
             placeholder="选择月">
           </el-date-picker>
         </div></el-col>
-        <el-col :span="6"><div class="grid-content bg-purple">
+        <el-col :span="2.5"><div class="grid-content bg-purple">
           <el-button type="primary" Style="margin-left: 6px" @click="getUserwageList" size="minin"  icon="el-icon-search" round></el-button>
           <el-button type="primary" size="minin"   @click="clearUserwageList"icon="el-icon-refresh-left" round></el-button>
         </div></el-col>
-        <el-col :span="10"><div class="grid-content bg-purple" align="right">
+        <el-col :span="12 "><div class="grid-content bg-purple" align="right">
           <el-button  @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
         </div></el-col>
       </el-row>
-      </el-card>
-<el-card>
+    </el-card>
+    <el-card>
       <el-table
         :data="userwageList"
         :header-cell-style="{'text-align':'center'}"
@@ -67,22 +78,32 @@
         </el-table-column>
 
         <el-table-column
-          label="绩效工资/元"
+          label="其它工资/元"
           :sortable=true
           prop="wage">
         </el-table-column>
 
         <el-table-column
-          label="月份 "
+          label="日期 "
           :sortable=true
 
           prop="endtime">
 
           <template slot-scope="scope">
-          {{scope.row.endtime[0]}} 年 {{scope.row.endtime[1]}} 月
+            {{scope.row.endtime[0]}} 年 {{scope.row.endtime[1]}} 月 {{scope.row.endtime[2]}}日
           </template>
         </el-table-column>
-
+        <el-table-column
+          label="事项"
+          prop="wageName">
+        </el-table-column>
+        <el-table-column
+          label="事项类别"
+          prop="cname">
+          <template slot-scope="scope">
+            <el-tag size="small" effect="dark"  type="info">{{scope.row.cname}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           label="备注"
           prop="des">
@@ -136,11 +157,12 @@
         <el-form-item label="请选择月份" :label-width="formLabelWidth">
           <div class="block"   STYLE="width:200px">
             <el-date-picker
-              @blur="myblur"
+
               v-model="userprewageForm.endtime"
               type="date"
+              :disabled="disabled2"
               value-format="yyyy-MM-dd"
-              placeholder="选择月">
+              placeholder="选择日期">
             </el-date-picker>
           </div>
         </el-form-item>
@@ -150,12 +172,12 @@
             :disabled="isuse"
             :clearable=true
             v-model="userprewageForm.userId"
-            @blur="myblur"
-            @focus="myblur"
+
             placeholder="请选择或搜索"
           >
 
             <el-option
+              cleanable
               v-for=" item in userList"
               :key="item.userId"
               :value="item.userId"
@@ -164,20 +186,44 @@
             >
             </el-option>
           </el-select>
-        </el-form-item>
-
-        <el-form-item label="绩效工资" :label-width="formLabelWidth"   >
-          <el-input v-model="userprewageForm.wage" autocomplete="off" type="number" Style="width: 172px" oninput="if(value<0)value=0"></el-input>
 
         </el-form-item>
 
+        <el-form-item label="请选择事项类别" :label-width="formLabelWidth">
+            <el-cascader
+              placeholder="试试搜索：奖励"
+              v-model="userprewageForm.option"
+              :options="listType2"
+              clearable
+              :disabled="disabled"
+              @change="myblur"
+              @focus="myblur"
+              filterable></el-cascader>
 
+            <el-switch
+              v-model="disabled"
+              active-color="#13ce66"d
+              inactive-color="#ff4949"
+              active-text="自定义事项"
+              :disabled="disabled2"
 
+              @change="myblur1"
+              inactive-text="选择事项">
+            </el-switch>
 
+          </el-form-item>
+
+        <el-form-item label="请输入事项" :label-width="formLabelWidth"   >
+          <el-input     placeholder="请输入自定义事项" :disabled="disabled1" v-model="userprewageForm.wageName" autocomplete="off"  Style="width: 172px" oninput="if(value<0)value=0"></el-input>
+
+        </el-form-item>
+        <el-form-item label="事项工资" :label-width="formLabelWidth"   >
+          <el-input v-model="userprewageForm.wage" autocomplete="off" type="number" Style="width: 172px" ></el-input>
+
+        </el-form-item>
         <el-form-item label=" 备注" :label-width="formLabelWidth"  >
           <el-input v-model="userprewageForm.des" autocomplete="off"></el-input>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -196,11 +242,17 @@
   import  postApi from '@/api/postMange'
   import userprewageApi from "@/api/userprewage";
   import userwageApi from "@/api/userwage";
+  import listTypeApi from "@/api/listType";
+  import safeList from "@/api/listType";
 
   export default {
     name: "user",
     data(){
       return{
+        listType1:[],
+        listType2:[],
+        disabled:false,
+        disabled1:true,
         //photo:"https://img1.baidu.com/it/u=4096959686,4145726040&fm=253&fmt=auto&app=138&f=JPEG?sec=1683017670&t=88663d7cd6f8d44dcd99a2d02f38584f",
         roleList: [],
         dscdata:'',
@@ -209,49 +261,48 @@
         depList:[],
         table:false,
         postList:[],
+        listType:[],
         flag1:true,
         value1:'',
+        myfocus:'',
         direction: 'rtl',//rtl / ltr / ttb / btt
         formLabelWidth:"130px",
         dialogFormVisible:false,
+        disabled2:false,
         userprewageForm:{
           des:"",
           userId:"",
           wage:"",
-          tag:1,
 
         },
+        value: [],
         userwageList:[],
         total:0,
         searchModel:{
           pageNo:1,
           pageSize:10,
+         option:[],
         },
         userList:[],
         rules:{
+
 
         }
       }
     },
     methods:{
-
-      saveUser(){
-
-
+ saveUser(){
+        console.log(this.userprewageForm)
         this.$refs.userprewageFormRef.validate((valid) => {
 
           if (valid&&this.flag1==true) {
 
-            this.userprewageForm.tag=1;
-            userprewageApi.addUserprewage(this.userprewageForm).then(response=>{
-              //成功
-
+          userprewageApi.addUserprewage(this.userprewageForm).then(response=>{
               this.$message(
                 {
                   message: response.message,
                   type: 'success',
                 })
-              //
               this.dialogFormVisible=false;
               this.getUserwageList();
             })
@@ -279,11 +330,29 @@
         });
         this.getUserwageList();
       },
-
-      getDesdata(value){
-        this.table=true;
-        this.dscdata=value;
+      clearlistType(){
+        this.searchModel.listId=null;
+        this.getlistType();
       },
+       myfocus(){
+
+         console.log(this.disabled1);
+        this.disabled1=false;
+
+      },
+      getlistType(){
+        console.log(this.searchModel);
+        listTypeApi.getlistType(this.searchModel).then(response=>{
+          this.listType=response.data.rows;
+          this.total=response.data.total;
+          this.listType1=response.data.types;
+          this.listType2=response.data.values;
+
+          console.log(this.listType2)
+
+        });
+      },
+
       handleSizeChange(pageSize){
         this.searchModel.pageSize=pageSize;
         this.getUserList();
@@ -301,27 +370,48 @@
 
           this.total=response.data.total;
 
-
         });
+
+      },
+      myblur(){
+
+      // console.log(this.userprewageForm);
+
+        listTypeApi.getlistTypeById(this.userprewageForm.option[1]).then(response=>{
+          this.userprewageForm.wage=response.data.money;
+        })
+
+
+      },
+      myblur1(){
+      this.disabled==true?this.disabled1=false:this.disabled1=true;
+      if (this.disabled1==false){
+        this.userprewageForm.wage=null;
+      }
 
       },
       clearUserwageList(){
         this.searchModel.userId=null;
+        this.searchModel.endtime=null;
+        this.searchModel.option=[];
         this.getUserwageList();
       },
       getUserwageList(){
+        console.log(this.searchModel)
 
-        userprewageApi.getUserwageList(this.searchModel).then(response=>{
+        userprewageApi.getUserwageList1(this.searchModel).then(response=>{
           this.userwageList=response.data.rows;
+// 使用 toLocaleDateString() 方法将日期转换为本地日期格式
           this.userwageList.forEach(item=>{
             item.endtime=new Date(item.endtime).toLocaleDateString().split("/");
           })
           this.total=response.data.total;
 
-          console.log(this.userwageList)
         },)
       },
       openEditUI(){
+        this.disabled=false;
+        this.disabled2=false;
         this.isuse=false;
         this.flag1=true;
         this.title='新增职工绩效工资';
@@ -331,10 +421,13 @@
         userprewageApi.getUserprewageById(id).then(response => {
           this.isuse=true;
           this.flag1=false;
+          this.disabled1=true;
+          this.disabled2=true;
+          this.disabled=true;
           this.userprewageForm = response.data;
           this.userprewageForm.endtime=new Date(this.userprewageForm.endtime);
         });
-        this.title='编辑职工绩效工资'
+        this.title='编辑职工其它工资'
         this.flag=false;
         this.dialogFormVisible=true;
       },
@@ -362,12 +455,6 @@
       clearForm(){
         this.$refs.userprewageFormRef.clearValidate();
         this.userprewageForm= {
-
-
-
-
-
-
         };
       },
 
@@ -379,6 +466,9 @@
     created() {
       this.getUserList();
       this.getUserwageList();
+      this. getlistType();
+
+
     }
   };
 </script>

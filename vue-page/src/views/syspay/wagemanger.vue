@@ -171,6 +171,7 @@
   import  depApi from '@/api/depMange'
   import  postApi from '@/api/postMange'
   import userwageApi from "@/api/userwage";
+  import listTypeApi from "@/api/listType";
 
   export default {
     name: "user",
@@ -216,6 +217,8 @@
         table:false,
         postList:[],
         flag1:true,
+        listType:[],
+        listType1:[],
         direction: 'rtl',//rtl / ltr / ttb / btt
         formLabelWidth:"130px",
         dialogFormVisible:false,
@@ -279,7 +282,14 @@
         });
         this.getUserwageList();
       },
-
+      getlistType(){
+        listTypeApi.getlistType(this.searchModel).then(response=>{
+          this.listType=response.data.rows;
+          this.total=response.data.total;
+          this.listType1=response.data.types;
+          console.log(this.listType)
+        },)
+      },
       getDesdata(value){
         this.table=true;
         this.dscdata=value;

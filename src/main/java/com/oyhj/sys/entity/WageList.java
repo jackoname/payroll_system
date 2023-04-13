@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -39,10 +40,10 @@ public class WageList implements Serializable {
     private Integer roleId;
 
     private Integer userId;
+    private Integer flag;
+    private Date creattime;
 
-    private LocalDateTime creattime;
-
-    private LocalDateTime endtime;
+    private Date endtime;
 
     private String state;
 
@@ -52,7 +53,12 @@ public class WageList implements Serializable {
     private String post_name;
     @TableField(exist = false)
     private  String depart;
-
+    @TableField(exist = false)
+    private  String cname;
     private  String name;
-
+    @TableField(exist = false)
+    private Integer option[];
+    @TableField(exist = false)
+    private Integer tag;
 }
+// {"option":[7,6],"endtime":"2023-04-09T16:00:00.000Z","userId":31,"wageName":"大苏打撒","wage":"87897","des":"撒娇客户端"}

@@ -7,41 +7,35 @@
           <el-select
             filterable
             :clearable="true"
-            v-model="searchModel.userId"
-
+            v-model="searchModel.listId"
+            @blur="myblur"
             @focus="myfocus"
             placeholder="请选择或搜索"
           >
             <el-option
-              v-for=" item in userList"
-              :key="item.userId"
-              :value="item.userId"
+              v-for=" item in listType1"
+              :key="item.listId"
+              :value="item.listId"
               :label="item.name"
             >
             </el-option>
           </el-select>
         </div></el-col>
-        <el-col :span="4.5"><div class="grid-content bg-purple">
-          <el-date-picker
-            v-model="searchModel.endtime"
-            type="month"
-            format="yyyy 年 MM 月"
-            value-format="yyyy-MM-dd"
-            placeholder="选择月">
-          </el-date-picker>
-        </div></el-col>
+
         <el-col :span="6"><div class="grid-content bg-purple">
-          <el-button type="primary" Style="margin-left: 6px" @click="getUserwageList" size="minin"  icon="el-icon-search" round></el-button>
-          <el-button type="primary" size="minin"   @click="clearUserwageList"icon="el-icon-refresh-left" round></el-button>
+          <el-button type="primary" Style="margin-left: 6px" @click="getlistType" size="minin"  icon="el-icon-search" round></el-button>
+          <el-button type="primary" size="minin"   @click="clearlistType"icon="el-icon-refresh-left" round></el-button>
         </div></el-col>
-        <el-col :span="10"><div class="grid-content bg-purple" align="right">
-          <el-button  @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
+        <el-col :span="15"><div class="grid-content bg-purple" align="right">
+          <el-button  @click="openEditUI" type="primary" icon="el-icon-folder-add" circle >添加事项</el-button>
+          <el-button  @click="table=true" type="primary" icon="el-icon-edit-outline" circle >类别管理</el-button>
+
         </div></el-col>
       </el-row>
-      </el-card>
-<el-card>
+    </el-card>
+    <el-card>
       <el-table
-        :data="userwageList"
+        :data="listType"
         :header-cell-style="{'text-align':'center'}"
         :cell-style="{'text-align':'center'}"
         style="width: 100%"
@@ -62,45 +56,24 @@
         </el-table-column>
 
         <el-table-column
-          label="姓名"
+          label="事项"
           prop="name">
         </el-table-column>
 
         <el-table-column
-          label="绩效工资/元"
-          :sortable=true
-          prop="wage">
+          label="描述"
+          prop="dsc">
         </el-table-column>
-
         <el-table-column
-          label="月份 "
-          :sortable=true
-
-          prop="endtime">
+          label="奖/罚金额（元）"
+          prop="money">
+        </el-table-column>
+        <el-table-column
+          label="类别"
+          prop="cname">
 
           <template slot-scope="scope">
-          {{scope.row.endtime[0]}} 年 {{scope.row.endtime[1]}} 月
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          label="备注"
-          prop="des">
-        </el-table-column>
-        <el-table-column
-          prop="depart"
-          label="部门">
-          <template slot-scope="scope">
-            <el-tag size="small" effect="dark" :type="scope.row.stateuser=='禁用'?'danger':'success'" >{{scope.row.depart}}</el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="post_name"
-          label="职位"
-          width="155">
-          <template slot-scope="scope">
-            <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.post_name}}</el-tag>
+            <el-tag size="small" effect="dark"  type="info">{{scope.row.cname}}</el-tag>
           </template>
         </el-table-column>
 
@@ -110,7 +83,7 @@
           fit="true"
         >
           <template slot-scope="scope">
-            <el-button type="primary" @click="editUserwage(scope.row.id)" icon="el-icon-edit" size="mini" circle></el-button>
+            <el-button type="primary" @click="editUserwage(scope.row.listId)" icon="el-icon-edit" size="mini" circle></el-button>
             <el-button type="danger"   @click="delUserwage(scope.row)"   icon="el-icon-delete" size="mini" circle></el-button>
           </template>
         </el-table-column>
@@ -128,50 +101,34 @@
     </el-pagination>
 
     <!--用户对话框-->
-
-
     <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible"  >
       <el-form :model="userprewageForm" :rules="rules" ref="userprewageFormRef">
 
-        <el-form-item label="请选择月份" :label-width="formLabelWidth">
-          <div class="block"   STYLE="width:200px">
-            <el-date-picker
-              @blur="myblur"
-              v-model="userprewageForm.endtime"
-              type="date"
-              value-format="yyyy-MM-dd"
-              placeholder="选择月">
-            </el-date-picker>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="请选择职工" :label-width="formLabelWidth">
+        <el-form-item label="请选择类别" :label-width="formLabelWidth">
           <el-select
             :disabled="isuse"
             :clearable=true
-            v-model="userprewageForm.userId"
+            v-model="userprewageForm.tag"
             @blur="myblur"
-            @focus="myblur"
+            @focus="myfocus"
             placeholder="请选择或搜索"
           >
-
             <el-option
-              v-for=" item in userList"
-              :key="item.userId"
-              :value="item.userId"
+              v-for=" item in listType1"
+              :key="item.listId"
+              :value="item.listId"
               :label="item.name"
-              :disabled="item.disabled"
             >
             </el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="绩效工资" :label-width="formLabelWidth"   >
-          <el-input v-model="userprewageForm.wage" autocomplete="off" type="number" Style="width: 172px" oninput="if(value<0)value=0"></el-input>
-
+        <el-form-item label="事项名称" :label-width="formLabelWidth"  >
+          <el-input v-model="userprewageForm.name" autocomplete="off"></el-input>
         </el-form-item>
-
-
+        <el-form-item label="奖/罚金额（元）" :label-width="formLabelWidth"   >
+          <el-input v-model="userprewageForm.money" autocomplete="off"  Style="width: 172px" type="number"></el-input>
+        </el-form-item>
 
 
         <el-form-item label=" 备注" :label-width="formLabelWidth"  >
@@ -186,7 +143,92 @@
     </el-dialog>
 
 
+
+    <el-dialog @close="clearForm" :title="title" :visible.sync="dialogFormVisible1"  >
+      <el-form :model="listTypeForm" :rules="rules" ref="listTypeFormRef">
+
+
+        <el-form-item label="类别名称" :label-width="formLabelWidth"   >
+          <el-input v-model="listTypeForm.name" autocomplete="off"  Style="width: 172px" oninput="if(value<0)value=0"></el-input>
+        </el-form-item>
+
+
+        <el-form-item label="类别属性" :label-width="formLabelWidth"   >
+          <el-radio-group v-model="listTypeForm.flag" size="mini" >
+            <el-radio label="999" border>正面</el-radio>
+            <el-radio label="-999" border>负面</el-radio>
+          </el-radio-group>
+
+        </el-form-item>
+
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="addcla">确 定</el-button>
+      </div>
+    </el-dialog>
+
+
+    <el-drawer
+      title="事项类别管理"
+      :visible.sync="table"
+      direction="rtl"
+      size="50%">
+      <el-card>
+
+        <el-table
+
+          :data="listType1"
+          :header-cell-style="{'text-align':'center'}"
+          :cell-style="{'text-align':'center'}"
+          style="width: 100%"
+
+          border="ture"
+          fit="ture"
+          stripe="true"
+          size="mini"
+          show-header="true"
+          highlight-current-row="ture"
+        >
+
+          <el-table-column
+            prop="date"
+            label="#">
+            <template slot-scope="scope">
+              {{(searchModel.pageNo-1)*searchModel.pageSize+scope.$index+1}}
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            label="事项类别"
+            prop="name">
+          </el-table-column>
+
+
+
+
+          <el-table-column
+            label="操作"
+            width="120"
+            fit="true"
+          >
+            <template slot-scope="scope">
+
+              <el-button type="danger"   @click="delUserwage(scope.row)"   icon="el-icon-delete" size="mini" circle></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-card >
+          <div align="center">
+            <el-button  @click="openEditUI1" type="primary" icon="el-icon-plus" >添加类别</el-button>
+          </div>
+        </el-card>
+      </el-card>
+    </el-drawer>
   </div>
+
+
 </template>
 
 <script>
@@ -196,6 +238,7 @@
   import  postApi from '@/api/postMange'
   import userprewageApi from "@/api/userprewage";
   import userwageApi from "@/api/userwage";
+  import listTypeApi from "@/api/listType";
 
   export default {
     name: "user",
@@ -214,14 +257,18 @@
         direction: 'rtl',//rtl / ltr / ttb / btt
         formLabelWidth:"130px",
         dialogFormVisible:false,
+        dialogFormVisible1:false,
         userprewageForm:{
           des:"",
           userId:"",
           wage:"",
-          tag:1,
+        },
+        listTypeForm:{
 
         },
-        userwageList:[],
+
+        listType:[],
+        listType1:[],
         total:0,
         searchModel:{
           pageNo:1,
@@ -233,19 +280,30 @@
         }
       }
     },
+
     methods:{
-
+      addcla(){
+        this.$refs.listTypeFormRef.validate((valid)=>{
+          listTypeApi.addlistType(this.listTypeForm).then(response=>{
+            //成功
+            console.log(this.listTypeForm);
+            this.$message(
+              {
+                message: response.message,
+                type: 'success',
+              })
+            this.dialogFormVisible1=false;
+            this.getlistType();
+          })
+        });
+      },
       saveUser(){
-
-
+        console.log(this.userprewageForm)
         this.$refs.userprewageFormRef.validate((valid) => {
 
           if (valid&&this.flag1==true) {
-
-            this.userprewageForm.tag=1;
-            userprewageApi.addUserprewage(this.userprewageForm).then(response=>{
+            listTypeApi.addlistType(this.userprewageForm).then(response=>{
               //成功
-
               this.$message(
                 {
                   message: response.message,
@@ -253,13 +311,13 @@
                 })
               //
               this.dialogFormVisible=false;
-              this.getUserwageList();
+              this.getlistType();
             })
 
           }
           else if(valid&&this.flag1==false){
 
-            userprewageApi.updateUserprewage(this.userprewageForm).then(response=>{
+            listTypeApi.updatelistType(this.userprewageForm).then(response=>{
               this.$message(
                 {
                   message: response.message,
@@ -268,16 +326,16 @@
               //
               this.dialogFormVisible=false;
               //
-              this.getUserwageList();
+              this.getlistType();
             })
           }
           else {
             console.log('error submit!!');
-            this.getUserwageList();
+            this.getlistType();
             return false;
           }
         });
-        this.getUserwageList();
+        this.getlistType();
       },
 
       getDesdata(value){
@@ -305,52 +363,53 @@
         });
 
       },
-      clearUserwageList(){
-        this.searchModel.userId=null;
-        this.getUserwageList();
+      clearlistType(){
+        this.searchModel.listId=null;
+        this.getlistType();
       },
-      getUserwageList(){
-
-        userprewageApi.getUserwageList(this.searchModel).then(response=>{
-          this.userwageList=response.data.rows;
-          this.userwageList.forEach(item=>{
-            item.endtime=new Date(item.endtime).toLocaleDateString().split("/");
-          })
+      getlistType(){
+        listTypeApi.getlistType(this.searchModel).then(response=>{
+          this.listType=response.data.rows;
           this.total=response.data.total;
-
-          console.log(this.userwageList)
+          this.listType1=response.data.types;
+          console.log(this.listType)
         },)
       },
       openEditUI(){
         this.isuse=false;
         this.flag1=true;
-        this.title='新增职工绩效工资';
+        this.title='新增事项';
         this.dialogFormVisible=true;
       },
-      editUserwage(id){
-        userprewageApi.getUserprewageById(id).then(response => {
+      openEditUI1(){
+        this.isuse=false;
+        this.flag1=true;
+        this.title='新增事项类别';
+        this.dialogFormVisible1=true;
+      },
+      editUserwage(ListId){
+        listTypeApi.getlistTypeById(ListId).then(response => {
           this.isuse=true;
           this.flag1=false;
           this.userprewageForm = response.data;
-          this.userprewageForm.endtime=new Date(this.userprewageForm.endtime);
         });
-        this.title='编辑职工绩效工资'
+        this.title='编辑事项'
         this.flag=false;
         this.dialogFormVisible=true;
       },
 
-      delUserwage(userprewage){
-        this.$confirm(`是否要删除${userprewage.name}?`, '提示', {
+      delUserwage(safeList){
+        this.$confirm(`是否要删除${safeList.name}?`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          userprewageApi.delUserprewageById(userprewage.id).then(response => {
+          listTypeApi.dellistTyoeById(safeList.listId).then(response => {
             this.$message({
               type: 'success',
               message: '删除成功!'
             });
-            this.getUserwageList();
+      this.getlistType();
           })
         }).catch(() => {
           this.$message({
@@ -363,14 +422,8 @@
         this.$refs.userprewageFormRef.clearValidate();
         this.userprewageForm= {
 
-
-
-
-
-
         };
       },
-
 
 
     },
@@ -378,7 +431,7 @@
 
     created() {
       this.getUserList();
-      this.getUserwageList();
+      this.getlistType();
     }
   };
 </script>

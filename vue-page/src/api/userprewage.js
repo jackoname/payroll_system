@@ -8,11 +8,26 @@ export default {
       params:{
         pageNo:searchModel.pageNo,
         pageSize:searchModel.pageSize,
-        userId:searchModel.userId
+        userId:searchModel.userId,
+        endtime:searchModel.endtime
       }
     });
   },
+  getUserwageList1(searchModel){
+    return request({
+      url:'wageList/list1',
+      method:'get',
+      params:{
+        pageNo:searchModel.pageNo,
+        pageSize:searchModel.pageSize,
+        userId:searchModel.userId,
+        endtime:searchModel.endtime,
+        option:searchModel.option[1]
 
+
+      }
+    });
+  },
   addUserprewage(wageList){
     return request({
       url:'wageList',
@@ -21,22 +36,22 @@ export default {
     });
   },
 
-  updateUserwage(userwage){
+  updateUserprewage(wageList){
     return request({
-      url:'userBasewage',
+      url:'wageList',
       method:'put',
-      data: userwage,
+      data: wageList,
     });
   },
-  getUserwageById(userId){
+  getUserprewageById(id){
     return request({
-      url:`/userBasewage/${userId}`,
+      url:`/wageList/${id}`,
       method:'get',
     });
   },
-  delUserwageById(userid){
+  delUserprewageById(id){
     return request({
-      url:`/userBasewage/${userid}`,
+      url:`/wageList/${id}`,
       method:'delete',
     });
   },
