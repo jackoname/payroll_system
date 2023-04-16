@@ -88,17 +88,19 @@ public class UserBasewageController {
         userBasewageLambdaQueryWrapper.eq(UserBasewage::getUserid,userBasewage.getUserid());
         List<UserBasewage> list = userBasewageService.list(userBasewageLambdaQueryWrapper);
         if (list.size()>0){
-            list.forEach(one->{
-                one.setVersion(0);
-                one.setDsc("工资更新替换");
-                userBasewageService.updateById(one);
-            });
+            for (int i = 0; i < list.size(); i++) {
+                if ((list.get(i).getVersion()==1)) {
+                    return Result.fail(usersService.getById(userBasewage.getUserid()).getName()+" 基础工资已存在!");
+                }
+            }
+
+
         }
         userBasewage.setVersion(1);
         userBasewageService.save(userBasewage);
        // usersService.addUser(user);
 
-        return Result.success("为"+userBasewage.getUsername()+" 添加基础工资成功!");
+        return Result.success("为"+usersService.getById(userBasewage.getUserid()).getName()+" 添加基础工资成功!");
     }
     @DeleteMapping("/{userId}")
     public Result<?> DeleteUserById(@PathVariable("userId") Integer userId){

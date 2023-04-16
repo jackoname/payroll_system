@@ -1,7 +1,11 @@
 package com.oyhj.sys.service;
 
+import com.oyhj.common.vo.Result;
 import com.oyhj.sys.entity.StaffWage;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.text.ParseException;
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IStaffWageService extends IService<StaffWage> {
 
+
+
+    List<StaffWage> greanWage(String gentime1) throws ParseException;
 }

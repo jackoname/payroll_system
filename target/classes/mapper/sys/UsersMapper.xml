@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oyhj.sys.mapper.UsersMapper">
+    <select id="getRoleNameByUserId" parameterType="Integer" resultType="String">
+        SELECT
+            b.`rolename`
+        FROM user_role a, role b
+        WHERE
+            a.roleid = b.`id`
+          AND a.userid = #{userId}
+    </select>
+    <select id="getuserByRoleId" parameterType="Integer" resultType="Users">
+    SELECT t2.*
+    FROM
+    user_role t1
+    LEFT JOIN
+    users t2
+    ON
+    t1.userid=t2.userid
+    WHERE
+    t1.roleid =#{roleid}
+      </select>
+</mapper>
