@@ -1,20 +1,5 @@
 <template>
   <div>
-    <el-card>
-      <el-row :gutter="20">
-      <el-col :span="4.5">
-        <div class="grid-content bg-purple">
-        <el-date-picker
-          v-model="searchModel.endtime"
-          type="month"
-          format="yyyy 年 MM 月"
-          value-format="yyyy-MM-dd"
-          placeholder="选择月">
-        </el-date-picker>
-        </div></el-col>
-      <el-col :span="4.5"> <el-button @click="culwage" type="primary" :loading="loading">自动计算工资</el-button></el-col>
-      </el-row>
-    </el-card>
 
 
     <el-card>
@@ -142,42 +127,26 @@
           label="基本医疗保险"
           :sortable=true
           prop="endowmentIn">
-          <template slot-scope="scope">
-           {{fun(scope.row.endowmentIn)}}
-          </template>
-        </el-table-column>
         </el-table-column>
         <el-table-column
           label="失业保险"
           :sortable=true
           prop="endowmentIn">
-          <template slot-scope="scope">
-       {{fun(scope.row.endowmentIn)}}
-          </template>
         </el-table-column>
         <el-table-column
           label="工伤保险"
           :sortable=true
           prop="employmentInjuryIn">
-          <template slot-scope="scope">
-            {{fun(scope.row.employmentInjuryIn)}}
-          </template>
         </el-table-column>
         <el-table-column
           label="生育保险"
           :sortable=true
           prop="maternityIn">
-          <template slot-scope="scope">
-          {{fun(scope.row.maternityIn)}}
-          </template>
         </el-table-column>
         <el-table-column
           label="住房公积金"
           :sortable=true
           prop="housingAccFund">
-          <template slot-scope="scope">
-          {{fun(scope.row.housingAccFund)}}
-          </template>
         </el-table-column>
         <el-table-column
           label="社保"
@@ -193,9 +162,6 @@
           label="实发工资"
           :sortable=true
           prop="comprehensiveSalary">
-          <template slot-scope="scope">
-            {{fun(scope.row.comprehensiveSalary)}}
-          </template>
         </el-table-column>
 
         <el-table-column
@@ -209,6 +175,8 @@
           formatDate(value)
         </el-table-column>
 
+
+
         <el-table-column
           label="状态 "
           :sortable=true
@@ -220,17 +188,19 @@
         </el-table-column>
 
         <el-table-column
-          label="操作"
-          width="120"
+          label="审核"
+          width="160"
           fit="true"
         >
           <template slot-scope="scope">
-            <el-button type="primary" @click="editUserwage(scope.row.id)" :disabled="scope.row.isclose" icon="el-icon-edit" size="mini" circle></el-button>
-            <el-button  :disabled="scope.row.isclose" type="success" icon="el-icon-check"    size="mini"  @click="saveOne(scope.row)" circle></el-button>
+            <el-button type="success"  @click="editUserwage(scope.row.id)"  plain size="mini">通过</el-button>
+            <el-button type="danger"   plain   size="mini"  @click="delOne(scope.row)">驳回</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+
 
     <el-pagination
       @size-change="handleSizeChange"
@@ -268,6 +238,7 @@
             @focus="myblur"
             placeholder="请选择或搜索"
           >
+
             <el-option
               v-for=" item in userList"
               :key="item.userId"
@@ -286,15 +257,6 @@
         <el-form-item label=" 备注" :label-width="formLabelWidth"  >
           <el-input v-model="userprewageForm.des" autocomplete="off"></el-input>
         </el-form-item>
-
-        <el-table-column
-          label="状态 "
-          :sortable=true
-          prop="state">
-          <template slot-scope="scope">
-            <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.statename}}</el-tag>
-          </template>
-        </el-table-column>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -354,16 +316,13 @@ import starrwageApi from "@/api/starrwage";
       }
     },
     methods:{
-      culwage(){
-        starrwageApi.getculWage(this.searchModel).then(response=>{
+      getStaffList(){
+        starrwageApi.getstaffwageList1(this.searchModel).then(response=>{
           this.staffList=response.data.rows;
-          console.log(this.staffList);
-
+          this.total=response.data.total;
         })
       },
       saveUser(){
-
-
         this.$refs.userprewageFormRef.validate((valid) => {
 
           if (valid&&this.flag1==true) {
@@ -381,8 +340,10 @@ import starrwageApi from "@/api/starrwage";
               this.dialogFormVisible=false;
               this.getUserwageList();
             })
+
           }
           else if(valid&&this.flag1==false){
+
             userprewageApi.updateUserprewage(this.userprewageForm).then(response=>{
               this.$message(
                 {
@@ -417,6 +378,7 @@ import starrwageApi from "@/api/starrwage";
         this.searchModel.pageNo=pageNo;
         this.getUserList();
       },
+
       getUserList(){
         userApi.getUserList(this.searchModel).then(response=>{
 
@@ -424,12 +386,15 @@ import starrwageApi from "@/api/starrwage";
 
           this.total=response.data.total;
         });
+
       },
       clearUserwageList(){
         this.searchModel.userId=null;
         this.getUserwageList();
       },
-
+      getUserwageList(){
+        this.staffList1=this.staffList1;
+      },
       getUserwageList(){
 
         userprewageApi.getUserwageList(this.searchModel).then(response=>{
@@ -459,6 +424,7 @@ import starrwageApi from "@/api/starrwage";
         this.flag=false;
         this.dialogFormVisible=true;
       },
+
       delUserwage(userprewage){
         this.$confirm(`是否要删除${userprewage.name}?`, '提示', {
           confirmButtonText: '确定',
@@ -478,13 +444,27 @@ import starrwageApi from "@/api/starrwage";
             message: '已取消删除'
           });
         });
-
       },
       clearForm(){
         this.$refs.userprewageFormRef.clearValidate();
         this.userprewageForm= {
         };
       },
+      delOne(staff){
+        this.$confirm(`确认驳回${staff.name}的工资?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          starrwageApi.delOne(staff.wageId).then(response => {
+            this.$message({
+              type: 'success',
+              message: '确认成功!'
+            });
+            this.getStaffList();
+          })
+        })
+  },
       saveOne(staff){
         this.$confirm(`确认${staff.name}的工资无误?`, '提示', {
           confirmButtonText: '确定',
@@ -499,7 +479,6 @@ import starrwageApi from "@/api/starrwage";
             });
             staff.isclose=true;
             this.getUserwageList();
-            location.reload()
           })
         }).catch(() => {
           this.$message({
@@ -508,7 +487,7 @@ import starrwageApi from "@/api/starrwage";
           });
         });
       },
-      formatDate(value) { //时间戳转换日期格式方法
+      formatDate(value) { // 时间戳转换日期格式方法
         if (value == null) {
           return ''
         } else {
@@ -520,17 +499,12 @@ import starrwageApi from "@/api/starrwage";
           d = d < 10 ? ('0' + d) : d
           return y + '-' + MM + '-' + d
         }
-      },
-      fun(val){
-        return Number(val).toFixed(2);
-      },
+      }
     },
     created() {
-     //var time =new Date().toLocaleDateString().split("/");
-     //this.searchModel.endtime=time[0]+"-"+time[1]+"-"+time[2];
-     //this.culwage();
       this.getUserList();
       this.getUserwageList();
+      this.getStaffList();
     }
   };
 </script>

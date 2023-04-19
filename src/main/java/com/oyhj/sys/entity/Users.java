@@ -33,7 +33,6 @@ public class Users implements Serializable {
     private Integer userId;
     @TableField("username")
     private String username;
-
     private String password;
     private  Integer isuse;
     private  Integer depid;

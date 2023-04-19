@@ -1,7 +1,5 @@
 package com.oyhj.sys.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.oyhj.common.vo.Result;
 import com.oyhj.sys.entity.*;
 import com.oyhj.sys.mapper.StaffWageMapper;
 import com.oyhj.sys.service.*;
@@ -10,10 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,10 +40,10 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
 
     @Override
     public List<StaffWage> greanWage(String gentime1) throws ParseException {
-        DecimalFormat df = new DecimalFormat("#.00");
+
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date gentime= formatter.parse(gentime1);
-
+        System.out.println(gentime+" -----" +gentime1);
         List<Users> userslist = usersService.list();//用户
         List<UserBasewage> ubwlists = userBasewageService.list();//基础工资
         List<WageList> wagelists1 = wageListService.list();//事项工资+绩效工资所有
@@ -61,7 +57,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
         @Data
         @AllArgsConstructor
         @NoArgsConstructor
-        @Lazy
+
         class personWage{
             Users user;
             UserBasewage userBasewage;
@@ -86,12 +82,11 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
         } );
 
         List<StaffWage> staffWages=new ArrayList<>();
-
-
         personWages.forEach(item->{
             StaffWage staffWage =new StaffWage();
             staffWage.setName(item.user.getName());
             staffWage.setHandOut(-1);//订单状态
+            staffWage.setUserId(item.user.getUserId());
             staffWage.setState(0);//状态
             staffWage.setBasicWage(item.userBasewage.getBasewage());
             /**************绩效**************/
@@ -99,12 +94,12 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             for (int i = 0; i < item.wageLists.size(); i++) {
                 if(item.wageLists.get(i).getFlag()==1) {
                     jx = item.wageLists.get(i).getWage();
-                break;
+                    break;
                 }
             }
             staffWage.setPerformance(jx);//当月绩效
             /****************罚款************/
-           double fk=0.0;
+            double fk=0.0;
             for (int i = 0; i < item.wageLists.size(); i++) {
                 if(item.wageLists.get(i).getFlag()!=1&&item.wageLists.get(i).getWage()<0) {
                     fk+= item.wageLists.get(i).getWage();
@@ -120,7 +115,6 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             }
             staffWage.setBonus(jl);//奖励金额
             double sum =fk+jl+item.userBasewage.getBasewage()+jx;
-
             /****************计算五险一金************/
             double sumwxyj=0.0;
             //养老保险2
@@ -129,12 +123,11 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
                 if ((stlists.get(i).getFlag()==2)) {
                     personoldbx=sum*stlists.get(i).getTaxMe();
                     comoldbx=sum*stlists.get(i).getTaxCom();
-                   break;
+                    break;
                 }
             }
             sumwxyj-=personoldbx;
             staffWage.setEndowmentIn(0-personoldbx);//个人保险
-
             //医疗保险3
             double personmedbx=0.0;  double commedbx=0.0;
             for (int i = 0; i < stlists.size(); i++) {
@@ -182,7 +175,6 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             }
             sumwxyj-=personbornbx;
             staffWage.setEndowmentIn(0-personbornbx);//工伤保险5
-
             //公积金7
             double personlivebx=0.0;  double comlivebx=0.0;
             for (int i = 0; i < stlists.size(); i++) {
@@ -197,7 +189,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             staffWage.setAllInsure(sumwxyj);//社保
 /***********************************税前工资****************************/
             double pretax =sum+sumwxyj;//税前工资
-          //  staffWage.setPerInTax(pretax);
+
             double low=5000.00; double taxme=0.0;
 /***********************************个税****************************/
             if(pretax<=5000&&pretax>1){
@@ -230,13 +222,17 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             else if(pretax>85000){
                 taxme=0.45;
             }
-           double pretaxmoney =-(pretax-low)*taxme;//个税
+            double pretaxmoney =-(pretax-low)*taxme;//个税
             staffWage.setPerInTax(pretaxmoney);//个税
             double comwage=pretax+pretaxmoney;
             staffWage.setComprehensiveSalary(comwage);//综合工资
-
+            //日期
+            staffWage.setEndtime(gentime);
+            staffWage.setCreatTime(new Date());
+            staffWage.setStatename("待确认");
             staffWages.add(staffWage);
         });
         return staffWages;
     }
+
 }

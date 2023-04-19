@@ -1,15 +1,16 @@
 package com.oyhj.sys.service;
 
 import com.oyhj.common.vo.Result;
-import com.oyhj.sys.entity.StaffWage;
-import com.baomidou.mybatisplus.extension.service.IService;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Delete;
+import com.oyhj.sys.entity.StaffWage;
 import java.text.ParseException;
 import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author oyhj
@@ -20,4 +21,5 @@ public interface IStaffWageService extends IService<StaffWage> {
 
 
     List<StaffWage> greanWage(String gentime1) throws ParseException;
+
 }

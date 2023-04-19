@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author xiaocai
- * @since 2023-03-18
+ * @since 2023-04-19
  */
 public interface StaffWageMapper extends BaseMapper<StaffWage> {
 

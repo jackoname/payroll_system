@@ -1,11 +1,16 @@
 package com.oyhj.sys.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * <p>
@@ -13,7 +18,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author xiaocai
- * @since 2023-03-18
+ * @since 2023-04-19
  */
 @TableName("staff_wage")
 @Data
@@ -26,12 +31,8 @@ public class StaffWage implements Serializable {
     /**
      * 员工id和信息id一致
      */
-    private String wageId;
-
-    /**
-     * 姓名和staff_data中一致
-     */
-    private String name;
+    @TableId(value = "wage_id", type = IdType.AUTO)
+    private Integer wageId;
 
     /**
      * 基本工资
@@ -113,7 +114,18 @@ public class StaffWage implements Serializable {
      */
     private Integer state;
 
+    private Integer userId;
+
+    private Date begin;
+
+    private Date endtime;
+    @TableField(value = "creatTime")
+    private Date creatTime;
+    @TableField(value = "allInsure ")
     private Double allInsure;
 
+    private String name;
 
+    private String statename;
+    private  Date updatetime;
 }

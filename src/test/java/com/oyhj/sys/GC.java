@@ -13,14 +13,15 @@ public class GC {
         String username="root";
         String password="123456";
         String moduleName ="sys";
-        String mapperLocation ="D:\\bishe\\payroll_management _system\\src\\main\\resources\\mapper\\"+moduleName;
-        String table="users,role,menu,role_menu,user_role,wage_list,stsff_wage,department,post,state,list_type,post_dep_user,dep_user,about_edu,user_basewage,usestate,taxandsafe";
+        String mapperLocation ="E:\\payroll_system\\src\\main\\resources\\mapper\\"+moduleName;
+        String table="users,role,menu,role_menu,user_role,wage_list,staff_wage,department,post,state,list_type,post_dep_user,dep_user,about_edu,user_basewage,usestate,taxandsafe";
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
                     builder.author("xiaocai") // 设置作者
                            // .enableSwagger() // 开启 swagger 模式
                             //.fileOverride() // 覆盖已生成文件
-                            .outputDir("D:\\bishe\\payroll_management _system\\src\\main\\java"); // 指定输出目录
+                            //.outputDir("D:\\bishe\\payroll_management _system\\src\\main\\java"); // 指定输出目录
+                    .outputDir("E:\\payroll_system\\src\\main\\java"); // 指定输出目录
                 })
                 .packageConfig(builder -> {
                     builder.parent("com.oyhj") // 设置父包名
