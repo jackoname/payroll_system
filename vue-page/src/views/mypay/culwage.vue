@@ -70,7 +70,8 @@
       >
         <el-table-column
           prop="date"
-          label="#">
+          fixed
+          label="序号">
           <template slot-scope="scope">
             {{(searchModel.pageNo-1)*searchModel.pageSize+scope.$index+1}}
           </template>
@@ -81,6 +82,7 @@
           fixed
           prop="name">
         </el-table-column>
+
         <el-table-column
           prop="depart"
           label="部门">
@@ -97,64 +99,96 @@
             <el-tag effect="dark" size="small" :type="scope.row.stateuser=='禁用'?'danger':'success'">{{scope.row.post_name}}</el-tag>
           </template>
         </el-table-column>
+
         <el-table-column
           label="基本工资"
           :sortable=true
           prop="basicWage">
+          <template slot-scope="scope">
+            {{fun(scope.row.basicWage)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="绩效工资"
           :sortable=true
           prop="performance">
+          <template slot-scope="scope">
+            {{fun(scope.row.performance)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="奖励"
           :sortable=true
           prop="bonus">
+          <template slot-scope="scope">
+            {{fun(scope.row.bonus)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="扣除"
           :sortable=true
           prop="fine">
+          <template slot-scope="scope">
+            {{fun(scope.row.fine)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="补贴"
           :sortable=true
           prop="wage">
+          <template slot-scope="scope">
+            {{fun(scope.row.wage)}}
+          </template>
         </el-table-column>
 
         <el-table-column
           label="应发工资"
           :sortable=true
-          prop="wage">
+          prop="sum">
+          <template slot-scope="scope">
+            {{fun(scope.row.sum)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="个税"
           :sortable=true
           prop="perInTax">
+          <template slot-scope="scope">
+            {{fun(scope.row.perInTax)}}
+          </template>
         </el-table-column>
+
         <el-table-column
-          label="基本养老保险"
-          :sortable=true
-          prop="endowmentIn">
-        </el-table-column>
-        <el-table-column
-          label="基本医疗保险"
+          label="养老保险"
           :sortable=true
           prop="endowmentIn">
           <template slot-scope="scope">
-           {{fun(scope.row.endowmentIn)}}
+            {{fun(scope.row.endowmentIn)}}
           </template>
         </el-table-column>
+        <el-table-column
+          label="医疗保险"
+          :sortable=true
+          prop="medicalIn">
+          <template slot-scope="scope">
+           {{fun(scope.row.medicalIn)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="失业保险"
           :sortable=true
-          prop="endowmentIn">
+          prop="unemploymentIn">
           <template slot-scope="scope">
-       {{fun(scope.row.endowmentIn)}}
+       {{fun(scope.row.unemploymentIn)}}
           </template>
         </el-table-column>
+
         <el-table-column
           label="工伤保险"
           :sortable=true
@@ -163,6 +197,7 @@
             {{fun(scope.row.employmentInjuryIn)}}
           </template>
         </el-table-column>
+
         <el-table-column
           label="生育保险"
           :sortable=true
@@ -171,6 +206,7 @@
           {{fun(scope.row.maternityIn)}}
           </template>
         </el-table-column>
+
         <el-table-column
           label="住房公积金"
           :sortable=true
@@ -179,16 +215,22 @@
           {{fun(scope.row.housingAccFund)}}
           </template>
         </el-table-column>
+
         <el-table-column
           label="社保"
           :sortable=true
           prop="allInsure">
+          <template slot-scope="scope">
+            {{fun(scope.row.allInsure)}}
+          </template>
         </el-table-column>
+
         <el-table-column
           label="应扣总额"
           :sortable=true
           prop="wage">
         </el-table-column>
+
         <el-table-column
           label="实发工资"
           :sortable=true

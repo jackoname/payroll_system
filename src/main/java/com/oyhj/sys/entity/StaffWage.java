@@ -105,6 +105,10 @@ public class StaffWage implements Serializable {
     private Double comprehensiveSalary;
 
     /**
+     * 综合工资
+     */@TableField(exist = false)
+    private Double sum;
+    /**
      * 工资发放状态
      */
     private Integer handOut;

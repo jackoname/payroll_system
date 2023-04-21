@@ -51,7 +51,7 @@ public class TaxandsafeController {
         Page<Taxandsafe> page =new Page<>(pageNo,pageSize);
         List<Taxandsafe> taxandsafes =new ArrayList<>();
         taxandsafeService.list().forEach(item->{
-            if (item.getFlag()==2) {
+            if (item.getFlag()>=2) {
                 taxandsafes.add(item);
             }
         });

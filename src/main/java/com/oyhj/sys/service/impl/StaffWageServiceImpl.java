@@ -40,7 +40,6 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
 
     @Override
     public List<StaffWage> greanWage(String gentime1) throws ParseException {
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date gentime= formatter.parse(gentime1);
         System.out.println(gentime+" -----" +gentime1);
@@ -115,6 +114,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
             }
             staffWage.setBonus(jl);//奖励金额
             double sum =fk+jl+item.userBasewage.getBasewage()+jx;
+            staffWage.setSum(sum);
             /****************计算五险一金************/
             double sumwxyj=0.0;
             //养老保险2
@@ -138,7 +138,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
                 }
             }
             sumwxyj-=personmedbx;
-            staffWage.setEndowmentIn(0-personmedbx);//医疗保险
+            staffWage.setMedicalIn(0-personmedbx);//医疗保险
 
             //失业保险4
             double personnojobbx=0.0;  double comnojobbx=0.0;
@@ -150,7 +150,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
                 }
             }
             sumwxyj-=personnojobbx;
-            staffWage.setEndowmentIn(0-personnojobbx);//失业保险4
+            staffWage.setUnemploymentIn(0-personnojobbx);//失业保险4
 
             //工伤保险5
             double personhurtbx=0.0;  double comhurtbx=0.0;
@@ -162,7 +162,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
                 }
             }
             sumwxyj-=personhurtbx;
-            staffWage.setEndowmentIn(0-personhurtbx);//工伤保险5
+            staffWage.setEmploymentInjuryIn(0-personhurtbx);//工伤保险5
 
             //生育保险6
             double personbornbx=0.0;  double combornbx=0.0;
@@ -174,7 +174,7 @@ public class StaffWageServiceImpl extends ServiceImpl<StaffWageMapper, StaffWage
                 }
             }
             sumwxyj-=personbornbx;
-            staffWage.setEndowmentIn(0-personbornbx);//工伤保险5
+            staffWage.setMaternityIn(0-personbornbx);//生育保险6
             //公积金7
             double personlivebx=0.0;  double comlivebx=0.0;
             for (int i = 0; i < stlists.size(); i++) {
